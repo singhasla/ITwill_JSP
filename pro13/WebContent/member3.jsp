@@ -49,8 +49,8 @@
 	<jsp:setProperty name="m" property="pwd" value='<%=request.getParameter("pwd") %>'/>
 	<jsp:setProperty name="m" property="name" value='<%=request.getParameter("name") %>'/>
 	<jsp:setProperty name="m" property="email" value='<%=request.getParameter("email") %>'/>
-	
-	
+
+
 	<%	
 		//위의 setProperty 액션태그 사용을 위한 주석처리
 	

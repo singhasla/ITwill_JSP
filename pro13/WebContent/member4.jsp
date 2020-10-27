@@ -57,7 +57,6 @@
 			<td width="5%">가입일</td>
 		</tr>
 		<%
-		
 		//DB에서 조회한 회원정보가 없으면?
 		if(membersList.size()==0){
 		%>

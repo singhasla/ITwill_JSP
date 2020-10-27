@@ -33,7 +33,6 @@
 	
 	
 	<%	
-		
 		//입력한 회원데이터들을 DB에 전송하여 INSERT작업하기 위해 MemberDAO객체 생성시
 		//기본생성자를 호출해 커넥션풀 얻기
 		MemberDAO memberDAO = new MemberDAO();
@@ -47,7 +46,6 @@
 		List membersList = memberDAO.listMembers();
 		
 		out.print(membersList.size());
-		
 	%>
 	
 	<table align="center" width="100%">
