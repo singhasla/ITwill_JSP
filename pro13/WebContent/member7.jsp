@@ -26,7 +26,6 @@
 	
 	<jsp:setProperty name="m" property="*"/>
 	
-	
 	<table align="center" width="100%">
 		<tr align="center" bgcolor="#99ccff">
 			<td width="7%">아이디</td>
