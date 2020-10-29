@@ -9,6 +9,26 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Insert title here</title>
+
+	<script type="text/javascript">
+	
+		//아래의 코드 중 삭제<a>태그를 클릭했을 때..
+		//직원삭제를 정말로 하시겠습니까?	<-- 라고 한번더 물어볼 수 있는 기능을 하는 메소드
+		function fnDel(no) {
+			
+			var recheck = confirm("정말로 삭제하시겠습니까?");
+			//[확인]버튼을 누르면 -> true
+			if(recheck){
+				//delSawon.jsp 재요청시.. 삭제할 직원no 전달
+				location.href = "delSawon.jsp?no=" + no;
+			}
+			else{//[취소]버튼을 누르면 -> false
+				
+			}
+			
+		}
+	</script>
+
 </head>
 <body>
 
