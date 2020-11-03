@@ -21,7 +21,7 @@ public class DBConnectionMgr {
     
     /********DB접속정보 수정*********/
     private String _driver = "com.mysql.jdbc.Driver",
-    _url = "jdbc:mysql://localhost:3306/jspbeginner",
+    _url = "jdbc:mysql://localhost:3306/jspbeginner?serverTimezone=Asia/Seoul",
     _user = "jspid",
     _password = "jsppass";
     /****************************/
