@@ -14,7 +14,7 @@
 	
 </head>
 <body>
-	<!-- 직우너 추가를 위해 입력하는 화면 -->
+	<!-- 직원 추가를 위해 입력하는 화면 -->
 	<form action="addSawon_pro.jsp" method="post">
 	
 		<div align="center">
