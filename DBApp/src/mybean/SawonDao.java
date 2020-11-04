@@ -134,6 +134,96 @@ public class SawonDao {
 			pool.freeConnection(con,pstmt);
 		}
 		
-	}//setSawon메소드 끝
+	}//setSawon메소드 끝	//addSawon_pro.jsp로 다시 간다.
 	
-}//SawonDAo클래스 끝
+	//직원 수정 전 직원 한 사람의 정보를 검색하기 위한 메소드
+	public SawonDto getSawon(int no){
+		//매개변수로 전달받는 직원번호에 해당되는 한 사람의 정보를 검색하는 SELECT문 만들기
+		String sql = "SELECT * FROM TBLSAWON WHERE no = ?";
+		
+		//검색한 한 사람의 정보를 저장할 SawonDto객체 생성, 참조변수이름 dto
+		SawonDto dto = new SawonDto();
+		
+		try {
+			//커넥션풀 내부에 있는 DB와 미리 연결을 맺은 Connection객체 얻기
+			con = pool.getConnection();
+			//? 기호에 대응되는 값을 제외한 SELECT구문을 실행할 PreparedStatement객체 얻기
+			pstmt = con.prepareStatement(sql);
+			//? 기호에 대응되는 값을 PreparedStatement객체에 설정
+			pstmt.setInt(1, no);
+			//PreparedStatement객체를 이용해 SELECT문장을 DB에 전송하여 실행후
+			//검색한 데이터를 ResultSet에 저장하여 반환받기
+			rs = pstmt.executeQuery();
+
+			//ResultSet객체 공간에 검색한 한 줄이 존재하면?
+			if(rs.next()){
+				//ResultSet객체 공간에서 검색한 한 줄 정보를 꺼내어 SawonDto객체의 각 변수에 저장
+				dto.setAddr(rs.getString("addr"));
+				dto.setAge(rs.getInt("age"));
+				dto.setDept(rs.getString("dept"));
+				dto.setExtension(rs.getString("extension"));
+				dto.setId(rs.getString("id"));
+				dto.setName(rs.getString("name"));
+				dto.setNo(no);
+				dto.setPass(rs.getString("pass"));
+			}
+		} catch (Exception e) {
+			System.out.println("getSawon메소드내부에서 오류 : " + e);
+		} finally {
+			pool.freeConnection(con, pstmt);
+		}
+		
+		//SawonDto객체 리턴		//modifySawon.jsp로
+		return dto;
+		
+	}//getSawon메소드 끝
+	
+	//매개변수로 전달받은 입력한 수정할 내용을 DB에 UPDATE할 메소드
+	public void modifySawon(SawonDto dto){
+		//매개변수로 전달받은 SawonDto객체의 no변수에 저장된 직원번호에 해당되는 직원의 정보 수정
+		String sql = "UPDATE TBLSAWON SET id=?, pass=?, name=?, age=?, addr=?, extension=?, dept=? where no=?";
+		
+		try {
+			con = pool.getConnection();
+			pstmt = con.prepareStatement(sql);
+			
+			pstmt.setString(1, dto.getId());
+			pstmt.setString(2, dto.getPass());
+			pstmt.setString(3, dto.getName());
+			pstmt.setInt(4, dto.getAge());
+			pstmt.setString(5, dto.getAddr());
+			pstmt.setString(6, dto.getExtension());
+			pstmt.setString(7, dto.getDept());
+			pstmt.setInt(8, dto.getNo());
+			
+			pstmt.executeUpdate();
+			
+		} catch (Exception e) {
+			System.out.println("modifySawon메소드내부에서 오류 : " + e.getMessage());
+		} finally {
+			pool.freeConnection(con,pstmt);
+		}
+		
+	}//modifySawon메소드 끝
+	
+	//매개변수로 전달받은 직원 no에 해당되는 레코드 삭제하는 메소드
+	public void delSawon(int no){
+		
+		String sql = "DELETE FROM TBLSAWON WHERE no = ?";
+		
+		try {
+			con = pool.getConnection();
+			pstmt = con.prepareStatement(sql);
+			
+			pstmt.setInt(1, no);
+			
+			pstmt.executeUpdate();
+			
+		} catch (Exception e) {
+			System.out.println("delSawon메소드 내부에서 오류 : " + e);
+		} finally {
+			pool.freeConnection(con, pstmt);
+		}
+	}//delSawon메소드 끝
+	
+}//SawonDao클래스 끝

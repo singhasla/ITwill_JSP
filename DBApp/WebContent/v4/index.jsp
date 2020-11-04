@@ -31,9 +31,9 @@
 				//delSawon.jsp 재요청시.. 삭제할 직원no 전달
 				location.href = "delSawon.jsp?no=" + no;
 			}
-			else{//[취소]버튼을 누르면 -> false
+			//else{//[취소]버튼을 누르면 -> false
 				
-			}
+			//}
 			
 		}
 	</script>

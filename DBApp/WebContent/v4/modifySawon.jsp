@@ -1,3 +1,5 @@
+<%@page import="mybean.SawonDto"%>
+<%@page import="mybean.SawonDao"%>
 <%@page import="java.sql.DriverManager"%>
 <%@page import="java.sql.Connection"%>
 <%@page import="java.sql.ResultSet"%>
@@ -23,59 +25,14 @@
 		//2. 수정할 직원번호를 request영역에서 얻기
 		String no = request.getParameter("no");
 		
-		//2-1. 수정할 직원번호에 해당하는 사원을 추출할 sql문 작성  
-		String sql = "select * from tblSawon where no=" + no;
+		//3. DB에 정보를 수정하기전 직원 한사람의 정보를 SELECT하기 위해
+		//	SawonDao객체 생성 후 getSawon()메소드 호출하여 작업
+		SawonDao dao = new SawonDao();
 		
-		
-		//3. DB작업을 위한 java.sql패키지에 존재하는 삼총사 객체를 담을 변수 준비
-		Connection con = null;
-		Statement stmt = null;
-		ResultSet rs = null;
-		
-		//4. 연결할 DB주소, DB접속 id, pw 정보를 변수에 저장		
-		String url = "jdbc:mysql://localhost:3306/jspbeginner?serverTimezone=Asia/Seoul";
-		String id = "jspid", pw = "jsppass";
-		
-		//5. select작업후 수정할 직원 정보를 저장할 변수들 선언
-		String s_id = null, s_name = null, s_pw = null, s_age = null;
-		String s_addr = null, s_ext = null, s_dept=null;
-		
-		//6. DB연동후 select 작업
-		
-		try{
-			//1단계 MySQL DBMS에서 제공해주는 Driver.class의 객체를 동적으로 생성해서
-			//DriverManager 클래스에 저장(등록)
-			//요약 : Mysql전용 Driver로딩 
-			Class.forName("com.mysql.jdbc.Driver");						//예외발생가능구역
-			//2단계  DB연결 시도(DB연결)
-			con = DriverManager.getConnection(url, id, pw);				//예외발생가능구역
-			//3단계 sql문을 실행할 Statement객체 얻기
-			stmt = con.createStatement();
-			//4단계 select문장을 DB에 전송 하여 실행!
-			//검색한 결과 데이터들을 ResultSet객체에 테이블형식으로 담아 리턴
-			rs = stmt.executeQuery(sql);								//예외발생가능구역
+			//수정할 직원 한사람의 정보를 검색하기 위해 getSawon메소드 호출시 직원 no전달함
+			//검색한 한 사람의 정보를 SawonDto객체에 저장 후 반환 받는다.
+			SawonDto dto = dao.getSawon(Integer.parseInt(no));
 			
-			//5단계 ResultSet객체에 저장된, 검색한 회원 1명의 정보를 꺼내와서 각 변수에 저장
-			if(rs.next()){
-				s_id = rs.getString("id");
-				s_name = rs.getString("name");
-				s_pw = rs.getString("pass");
-				s_age = String.valueOf(rs.getString("age"));
-				s_addr = rs.getString("addr");
-				s_ext = rs.getString("extension");
-				s_dept = rs.getString("dept");
-			}
-		}catch(Exception e){
-			System.out.println("modifySawon.jsp에서 예외 발생 : " + e);
-		}finally{
-			//자원해제
-			//ResultSet객체를 사용하고 있으면 자원해제
-			if(rs != null) rs.close();
-			//Statement객체를 사용하고 있으면 자원해제
-			if(stmt != null) stmt.close();
-			//Connection객체를 사용하고 있으면 자원해제
-			if(con != null) con.close();
-		}
 	%>
 	
 	<%-- 7. 수정하기 전에 먼저 검색한 직원 한 명의 정보를 나타내자 --%>
@@ -90,42 +47,42 @@
 			<table>
 				<tr>
 					<th>아이디</th>
-					<td><input type="text" name="s_id" value="<%=s_id %>"></td>
+					<td><input type="text" name="id" value="<%=dto.getId() %>"></td>
 				</tr>
 				<tr>
 					<th>이름</th>
-					<td><input type="text" name="s_name" value="<%=s_name %>"></td>
+					<td><input type="text" name="name" value="<%=dto.getName() %>"></td>
 				</tr>
 				<tr>
 					<th>비밀번호</th>
-					<td><input type="text" name="s_pw" value="<%=s_pw %>"></td>
+					<td><input type="text" name="pass" value="<%=dto.getPass() %>"></td>
 				</tr>
 				<tr>
 					<th>나이</th>
-					<td><input type="text" name="s_age" value="<%=s_age %>"></td>
+					<td><input type="text" name="age" value="<%=dto.getAge() %>"></td>
 				</tr>
 				<tr>
 					<th>근무지</th>
 					<td>
-						<select name="s_addr">
-							<option value="서울" <% if(s_addr.equals("서울")){%> selected <%} %>>서울</option>
-							<option value="경기" <% if(s_addr.equals("경기")){%> selected <%} %>>경기</option>
-							<option value="인천" <% if(s_addr.equals("인천")){%> selected <%} %>>인천</option>
-							<option value="수원" <% if(s_addr.equals("수원")){%> selected <%} %>>수원</option>
+						<select name="addr">
+							<option value="서울" <% if(dto.getAddr().equals("서울")){%> selected <%} %>>서울</option>
+							<option value="경기" <% if(dto.getAddr().equals("경기")){%> selected <%} %>>경기</option>
+							<option value="인천" <% if(dto.getAddr().equals("인천")){%> selected <%} %>>인천</option>
+							<option value="수원" <% if(dto.getAddr().equals("수원")){%> selected <%} %>>수원</option>
 						</select>
 					</td>
 				</tr>
 				<tr>
 					<th>내선번호</th>
-					<td><input type="text" name="s_ext" value="<%=s_ext %>"></td>
+					<td><input type="text" name="extension" value="<%=dto.getExtension() %>"></td>
 				</tr>
 				<tr>
 					<th>부서명</th>
 					<td>
-						<select name="s_dept">
-							<option value="영업" <% if(s_dept.equals("영업")){%> selected <%} %>>영업</option>
-							<option value="기술" <% if(s_dept.equals("기술")){%> selected <%} %>>기술</option>
-							<option value="기획" <% if(s_dept.equals("기획")){%> selected <%} %>>기획</option>
+						<select name="dept">
+							<option value="영업" <% if(dto.getDept().equals("영업")){%> selected <%} %>>영업</option>
+							<option value="기술" <% if(dto.getDept().equals("기술")){%> selected <%} %>>기술</option>
+							<option value="기획" <% if(dto.getDept().equals("기획")){%> selected <%} %>>기획</option>
 						</select>
 					</td>
 				</tr>
