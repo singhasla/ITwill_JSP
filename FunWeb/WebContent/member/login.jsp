@@ -25,27 +25,7 @@
 <body>
 	<div id="wrap">
 		<!-- 헤더들어가는 곳 -->
-		<header>
-			<div id="login">
-				<a href="../member/login.jsp">login</a> | <a
-					href="../member/join.jsp">join</a>
-			</div>
-			<div class="clear"></div>
-			<!-- 로고들어가는 곳 -->
-			<div id="logo">
-				<img src="../images/logo.gif" width="265" height="62" alt="Fun Web">
-			</div>
-			<!-- 로고들어가는 곳 -->
-			<nav id="top_menu">
-				<ul>
-					<li><a href="../index.jsp">HOME</a></li>
-					<li><a href="../company/welcome.jsp">COMPANY</a></li>
-					<li><a href="#">SOLUTIONS</a></li>
-					<li><a href="../center/notice.jsp">CUSTOMER CENTER</a></li>
-					<li><a href="#">CONTACT US</a></li>
-				</ul>
-			</nav>
-		</header>
+		<jsp:include page="../inc/top.jsp" />
 		<!-- 헤더들어가는 곳 -->
 
 		<!-- 본문들어가는 곳 -->
@@ -63,7 +43,7 @@
 		<!-- 본문내용 -->
 		<article>
 			<h1>Login</h1>
-			<form action="loginPro.jsp" id="join" method="post">
+			<form action="loginPro.jsp" id="join" method="post"  >
 				<fieldset>
 					<legend>Login Info</legend>
 					<label>User ID</label> <input type="text" name="id"><br>
@@ -81,20 +61,9 @@
 
 		<div class="clear"></div>
 		<!-- 푸터들어가는 곳 -->
-		<footer>
-			<hr>
-			<div id="copy">
-				All contents Copyright 2011 FunWeb 2011 FunWeb Inc. all rights
-				reserved<br> Contact mail:funweb@funwebbiz.com Tel +82 64 123
-				4315 Fax +82 64 123 4321
-			</div>
-			<div id="social">
-				<img src="../images/facebook.gif" width="33" height="33"
-					alt="Facebook"> <img src="../images/twitter.gif" width="34"
-					height="34" alt="Twitter">
-			</div>
-		</footer>
+		<jsp:include page="../inc/bottom.jsp" />
 		<!-- 푸터들어가는 곳 -->
 	</div>
 </body>
 </html>
+

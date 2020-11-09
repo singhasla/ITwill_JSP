@@ -2,24 +2,23 @@ package board;
 
 import java.sql.Timestamp;
 
-//자바빈 클래스 중에 dto 역할
+//자바빈 클래스의 종류중 dto
 public class BoardBean {
-	
 	//변수
-	private int num;		//게시물 번호
-	private String name;	//게시물 작성자 이름
-	private String passwd; 	//게시물 비밀번호
-	private String subject;	//게시물 제목
-	private String content;	//게시물 내용
-	private int re_ref;		//답변글 작성시 주글과 답변글이 속한 그룹의 값
-	private int re_lev;		//답변글의 들여쓰기 정도값
-	private int re_seq;		//답변글들 내의 순서값
-	private int readcount; 	//게시물 조회수
-	private Timestamp date;	//게시물 작성 날짜
-	private String ip;		//게시물 작성 클라이언트의 IP주소
-
+	private int num;  //글번호
+	private String name;  //글작성자이름
+	private String passwd;   //글의 비밀번호
+	private String subject;  //글제목
+	private String content;  //글내용
+	private int re_ref;		 //답변글 작성시 주글과 답변글이 속한 그룹의 그룹값
+	private int re_lev; 	 //답변글의 들여쓰기 정도값
+	private int re_seq; 	 //답변글들 내의 순서값
+	private int readcount;   //글 조회수
+	private Timestamp date;  //글 작성 날짜
+	private String ip;		 //글을 작성한 클라이언트의 IP주소 
 	
-	//getter, setter메소드
+	//getter,setter역할을 하는 메소스들 
+	//alt+shift+s r
 	public int getNum() {
 		return num;
 	}
@@ -87,4 +86,9 @@ public class BoardBean {
 		this.ip = ip;
 	}
 	
+	
+	
 }
+
+
+

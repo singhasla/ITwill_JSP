@@ -1,3 +1,6 @@
+
+
+<%@page import="java.text.SimpleDateFormat"%>
 <%@page import="board.BoardBean"%>
 <%@page import="java.util.List"%>
 <%@page import="board.BoardDAO"%>
@@ -25,24 +28,46 @@
  </script>
  <![endif]-->
 </head>
-
 <%
 	//DB작업할 객체 생성
 	BoardDAO boardDAO = new BoardDAO();
 
-	//DB에 저장된 전체 글 개수 검색 해오는 메소드 호출
+	//DB에 저장된 전체 글개수 검색 해오는 메소드 호출
 	int count = boardDAO.getBoardCount();
 	
-	//DB에 저장된 전체 글 정보들을 담을 배열 변수 선언
-	List<BoardBean> list = null;
 	
-	if(count > 0){	//작성한 글이 존재한다면
-		
-		//DB에 저장된 모든 글을 검색해서 ArrayList에 담아 리턴
-		list = boardDAO.getBoardList();
+	//한 페이지당 보여줄 글개수 5개로 설정
+	int pageSize = 5;
+	
+	//notice.jsp페이지에서 클릭한 페이지 번호 얻기 
+	String pageNum = request.getParameter("pageNum");
+	
+	//현재 클릭한 페이지 번호가 없으면(notice.jsp페이지를 처음 요청했을때)
+	//현재 화면에 나타나는 페이지를 1로 설정
+	if(pageNum == null){
+		pageNum = "1";
 	}
 	
+	//현재 화면에서 클릭한 페이지번호(현재 보여지는 화면)를 정수로 변화해서 저장
+	int currentPage = Integer.parseInt(pageNum);
+	
+	//각 페이지 마다  가장 첫번째로 보여질 시작 글번호 구하기
+	//(현재 화면에서 클릭한 페이지번호 - 1) * 한페이지당 보여줄 글개수 5
+	int startRow = (currentPage - 1) * pageSize;
+		
+	//DB에 저장된 전체 글정보들을 담을 변수 선언
+	List<BoardBean> list = null;
+	
+	if(count > 0){//DB에 글이 존재 한다면
+		
+		//글목록 검색해서 가져오기
+		//getBoardList(각페이지마다 첫번째로 보여질 시작 글번호, 한페이당 보여줄 글개수);
+		list = boardDAO.getBoardList(startRow,pageSize);
+	} 
+	//날짜 포맷 형식을 개발자가 지정할수 있는 객체 생성
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");	
 %>
+
 
 <body>
 	<div id="wrap">
@@ -68,7 +93,7 @@
 
 		<!-- 게시판 -->
 		<article>
-			<h1>Notice[전체 글 개수: <%=count %>    ]</h1>
+			<h1>Notice[전체 글 개수: <%=count%>]</h1>
 			<table id="notice">
 				<tr>
 					<th class="tno">No.</th>
@@ -77,30 +102,44 @@
 					<th class="tdate">Date</th>
 					<th class="tread">Read</th>
 				</tr>
-				
+<%
+	if(count > 0){//DB에 글이 존재 한다면
+			for(int i=0;  i<list.size(); i++){
+				BoardBean bean = list.get(i);
+%>				
+				<tr onclick="location.href='content.jsp?num=<%=bean.getNum()%>&pageNum=<%=pageNum%>'">
+					<td><%=bean.getNum()%></td>
+					<td class="left"><%=bean.getSubject()%></td>
+					<td><%=bean.getName()%></td>
+					<td><%=sdf.format(bean.getDate())%></td>	
+					<td><%=bean.getReadcount()%></td>
+				</tr>	
+<%				
+			}
+	}else{ //DB에 글이 존재 하지 않으면 
+%>		
+				<tr>
+					<td colspan="5">게시판 글 없음</td>
+				</tr>	
+<%		
+	}
+%>							
 			</table>
 			
 			<%
 				String id = (String)session.getAttribute("id");
-			
-				if(id != null){	//로그인 되어있다면
-					
-					%> 
-					<!-- //글쓰기버튼이 보여야 함. -->
-					<div id="table_search">
-						<input type="button" value="글쓰기" onclick="location.href='write.jsp'" class="btn"/>	
-					</div>	
-					<%
-				} else { //로그인 되어있지 않다면
-					
-					//글쓰기버튼이 보이지 않아야 함.
-				}
-			
-			%>
-			
+				if(id != null){ //로그인 되어있다면
+			%>		
+			<div id="table_search">
+				<input type="button" 
+					   value="글쓰기"  
+					   onclick="location.href='write.jsp'" 
+					   class="btn"  />
+			</div>
+			<%}%>	
 			<div id="table_search">
 				<input type="text" name="search" class="input_box"> 
-				<input type="button" value="검색" class="btn">
+				<input type="button" value="글검색" class="btn">
 			</div>
 			<div class="clear"></div>
 			<div id="page_control">
@@ -118,3 +157,8 @@
 	</div>
 </body>
 </html>
+
+
+
+
+

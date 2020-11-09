@@ -1,5 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+
+<%--ctrl + shift + F키  코드정렬 단축키--%>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -21,51 +24,34 @@
 
  </script>
  <![endif]-->
- 
- 	<script type="text/javascript">
- 		//중복체크 버튼을 눌렀을 때 호출되는 함수
- 		function winopen() {
-			//아이디를 입력하지 않았다면
-			if(document.fr.id.value == ""){
-				alert("아이디를 입력하세요.");
-				document.fr.id.focus();
-				return;
-			} else {
-				var fid = document.fr.id.value;
-				
-				var url = "join_IDCheck.jsp?userid=" + fid;
-				var name = "";
-		        var option = "width = 400, height = 200";
-		        window.open(url, name, option);
-			}
-		}
- 	</script>
  	
+ 	<script type="text/javascript">
+ 		//중복체크 버튼 눌렀을때 호출되는 함수 
+ 		function winopen(){
+ 			//아이디를 입력하지 않았다면?
+ 			if(document.fr.id.value == ""){
+ 				//아이디를 입력하세요 <--경고메세지창 뛰우기
+ 				alert("아이디를 입력하세요.");
+ 				//아이디입력<input>태그에  포커스주기
+ 				document.fr.id.focus();
+ 				//winopen함수 빠져 나가기
+ 				return;
+ 			}
+ 			//아이디를 입력 했다면?
+ 				//입력한 아이디값을 얻어  fid변수에 저장
+ 				var fid	 = document.fr.id.value;
+ 				//"join_IDCheck.jsp"페이지를 팝업창으로 열어 요청할때? 입력한 아이디를 전송!
+ 				//이팝업창의 width=400, height=200 으로 설정
+ 				window.open("join_IDCheck.jsp?userid=" + fid,"","width=400,height=200");
+ 					
+ 		}
+ 	
+ 	</script>
 </head>
 <body>
 	<div id="wrap">
 		<!-- 헤더들어가는 곳 -->
-		<header>
-			<div id="login">
-				<a href="../member/login.jsp">login</a> | <a
-					href="../member/join.jsp">join</a>
-			</div>
-			<div class="clear"></div>
-			<!-- 로고들어가는 곳 -->
-			<div id="logo">
-				<img src="../images/logo.gif" width="265" height="62" alt="Fun Web">
-			</div>
-			<!-- 로고들어가는 곳 -->
-			<nav id="top_menu">
-				<ul>
-					<li><a href="../index.jsp">HOME</a></li>
-					<li><a href="../company/welcome.jsp">COMPANY</a></li>
-					<li><a href="#">SOLUTIONS</a></li>
-					<li><a href="../center/notice.jsp">CUSTOMER CENTER</a></li>
-					<li><a href="#">CONTACT US</a></li>
-				</ul>
-			</nav>
-		</header>
+		<jsp:include page="../inc/top.jsp" />
 		<!-- 헤더들어가는 곳 -->
 
 		<!-- 본문들어가는 곳 -->
@@ -83,10 +69,10 @@
 		<!-- 본문내용 -->
 		<article>
 			<h1>Join Us</h1>
-			<form action="joinPro.jsp" id="join" name="fr" method="post" >
+			<form action="joinPro.jsp" method="post" name="fr"  id="join">
 				<fieldset>
 					<legend>Basic Info</legend>
-					<label>User ID</label> <input type="text" name="id" class="id">
+					<label>User ID</label> <input type="text" name="id" class="id" >
 					<input type="button" value="중복체크" class="dup" onclick="winopen();"><br>
 					<label>Password</label> <input type="password" name="passwd"><br>
 					<label>Retype Password</label> <input type="password" name="passwd2"><br>
@@ -113,20 +99,12 @@
 
 		<div class="clear"></div>
 		<!-- 푸터들어가는 곳 -->
-		<footer>
-			<hr>
-			<div id="copy">
-				All contents Copyright 2011 FunWeb 2011 FunWeb Inc. all rights
-				reserved<br> Contact mail:funweb@funwebbiz.com Tel +82 64 123
-				4315 Fax +82 64 123 4321
-			</div>
-			<div id="social">
-				<img src="../images/facebook.gif" width="33" height="33"
-					alt="Facebook"> <img src="../images/twitter.gif" width="34"
-					height="34" alt="Twitter">
-			</div>
-		</footer>
+		<jsp:include page="../inc/bottom.jsp" />
 		<!-- 푸터들어가는 곳 -->
 	</div>
 </body>
 </html>
+
+
+
+

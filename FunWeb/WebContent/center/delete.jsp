@@ -22,6 +22,18 @@
  </script>
  <![endif]-->
 </head>
+
+<%
+	//한글처리
+	request.setCharacterEncoding("UTF-8");
+
+	//content.jsp페이지에서 글삭제 버튼을 클릭했을때 전달 받는  
+	//삭제할 글번호, 삭제할글이 속해있는 페이지 번호 얻기
+	int num = Integer.parseInt(request.getParameter("num"));//삭제할 글번호
+	String pageNum = request.getParameter("pageNum");//글이 속해 있는 페이지번호
+	
+%>
+
 <body>
 	<div id="wrap">
 		<!-- 헤더들어가는 곳 -->
@@ -46,34 +58,22 @@
 
 		<!-- 게시판 -->
 		<article>
-			<h1>Notice Write</h1>
-			<form action="writePro.jsp" method="post">
+			<h1>Notice DELETE</h1>
+			<form action="deletePro.jsp?pageNum=<%=pageNum%>" method="post">
+				<%--삭제할 글번호 전달 --%>
+				<input type="hidden" name="num" value="<%=num%>"/>
+			
 				<table id="notice">
-					<tr>
-						<td>이름</td>
-						<td>
-							<input type="text" name="name" 
-						           value="<%=session.getAttribute("id")%>" 
-						           readonly>
-						</td>
-					</tr>
 					<tr>
 						<td>비밀번호</td>
 						<td><input type="password" name="passwd"></td>
-					</tr>					
-					<tr>
-						<td>제목</td>
-						<td><input type="text" name="subject"></td>
-					</tr>
-					<tr>
-						<td>내용</td>
-						<td><textarea name="content" rows="13" cols="40"></textarea></td>
-					</tr>									
+					</tr>												
 				</table>
 				<div id="table_search">
-					<input type="submit" value="글쓰기" class="btn" >
+					<input type="submit" value="글삭제" class="btn" >
 					<input type="reset" value="다시작성" class="btn" >
-					<input type="button" value="글목록" class="btn" onclick="loction.href='notice.jsp'" >
+					<input type="button" value="글목록" class="btn" 
+					       onclick="loction.href='notice.jsp?pageNum=<%=pageNum%>'" >
 				</div>
 			</form>		
 			<div class="clear"></div>
