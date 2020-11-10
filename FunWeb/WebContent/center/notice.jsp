@@ -109,7 +109,23 @@
 %>				
 				<tr onclick="location.href='content.jsp?num=<%=bean.getNum()%>&pageNum=<%=pageNum%>'">
 					<td><%=bean.getNum()%></td>
-					<td class="left"><%=bean.getSubject()%></td>
+					<td class="left">
+						<%
+							int wid = 0;	//답변글에 대한 들여쓰기 정도값 저장
+							
+							if(bean.getRe_lev() > 0){	//답변글이라면
+								//들여쓰기 값 처리
+								wid = bean.getRe_lev() * 10;
+							
+						%>
+						<img src="../images/center/level.gif" width="<%=wid%> height="15">
+						<img src="../images/center/re.gif">
+						<%
+							}
+						%>
+						
+						<%=bean.getSubject()%>
+					</td>
 					<td><%=bean.getName()%></td>
 					<td><%=sdf.format(bean.getDate())%></td>	
 					<td><%=bean.getReadcount()%></td>

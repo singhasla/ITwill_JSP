@@ -280,7 +280,119 @@ public class BoardDAO {
 		return check;//deletePro.jsp로 비밀번호 일치 유무 1 또는 0을 반환
 	}//deleteBoard메소드 끝
 	
+	
+	//수정을 위해 입력한 글정보가 저장된 BoardBean객체를 매개변수로 전달받아
+	//UPDATE문장 완성후 DB와 연결하여 UPDATE구문 실행할 메소드
+	//조건 : DB에 저장된 글의 비밀번호와 글을 수정하기 위해 입력한 비밀번호가 일치할 때만 UPDATE함
+	public int updateBoard(BoardBean bBean){
+		
+		int check = 0;
+		String sql = "";
+		
+		try {
+			con = getConnection();
+			
+			sql = "SELECT passwd FROM board WHERE num=?";
+			
+			pstmt = con.prepareStatement(sql);
+			
+			pstmt.setInt(1, bBean.getNum());
+			
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()){
+				//글수정을 위해 입력한 비밀번호와 검색한 글의 비밀번호를 비교해 동일하면
+				if( bBean.getPasswd().equals(rs.getString("passwd")) ){
+					check = 1;
+					sql = "UPDATE board SET name=?, subject=?, content=? WHERE num=?";
+					pstmt = con.prepareStatement(sql);
+					pstmt.setString(1, bBean.getName());
+					pstmt.setString(2, bBean.getSubject());
+					pstmt.setString(3, bBean.getContent());
+					pstmt.setInt(4, bBean.getNum());
+					pstmt.executeUpdate();
+				} else {	//글수정을 위해 입력한 비밀번호가 틀리면
+					check = 0;
+				}
+			}
+			
+		} catch (Exception e) {
+			System.out.println("updateBoard메소드 내부에서 오류 : " + e);
+		} finally {
+			자원해제();
+		}
+		
+		return check;	//updatePro.jsp로 check변수값 반환
+		
+	}//updateBoard메소드 끝
+	
+	
+	
+	/* 
+	 * 답변 달기 규칙 
+	 * 
+	 *	1. 답글 그룹번호(re_ref)는 주글의 그룹번호(re_ref)를 사용한다.
+	 * 	2. 같은 그룹의 글들 내의 순서값(re_seq)은 주글의 re_seq에서 +1증가한 값을 넣어준다.
+	 * 	3. 답글의 들여쓰기 정도값(re_lev)은 주글의 re_lev값에 +1 증가한 값을 넣어서 사용한다.
+	 *  
+	 *  답변글을 DB에 INSERT하는 메소드 만들기
+	 */
+	public void reInsertBoard(BoardBean bBean){	//reWritePro.jsp에서 호출하는 메소드로
+												//bBean객체 내에는 답글정보와 주글정보가 담겨있다.
+		String sql = "";
+		//답글의 글번호를 만들어서 저장할 변수
+		int num = 0;
+		
+		try {
+			
+			con = getConnection();
+			
+			//답글의 글번호를 구하기 위해 DB에 저장된 가장 최신글 번호 얻기
+			sql = "SELECT max(num) FROM board";
+			pstmt = con.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()){	//최신글번호가 검색된다면
+				num = rs.getInt(1) + 1;
+			} else {	//DB에 글이 없다면
+				num = 1;
+			}
+			
+			//re_seq 답글들 내의 순서재배치
+			//주글의 그룹과 같은 그룹이면서 주글의 seq값보다 큰 답변글들은? seq값을 1 증가시킨다.(re_seq = re_seq+1)
+			sql = "UPDATE board SET re_seq = re_seq+1 WHERE re_ref = ? AND re_seq > ?";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, bBean.getRe_ref());
+			pstmt.setInt(2, bBean.getRe_seq());
+			pstmt.executeUpdate();
+			
+			/* 답변 달기 */
+			//insert
+			sql = "INSERT INTO board VALUES(?,?,?, ?,?,?, ?,?,?, ?,?)";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, num);	//추가할 답변글의 글번호
+			pstmt.setString(2, bBean.getName());	//답변글을 작성하는 사람의 이름
+			pstmt.setString(3, bBean.getPasswd());	//답변글의 비밀번호
+			pstmt.setString(4, bBean.getSubject());	//답변글의 제목
+			pstmt.setString(5, bBean.getContent());	//답변글의 내용
+			pstmt.setInt(6, bBean.getRe_ref());		//답변글의 그룹번호
+			pstmt.setInt(7, bBean.getRe_lev()+1);	//답변글의 들여쓰기정도값은 주글의 들여쓰기정도값에 +1 한값을 사용
+			pstmt.setInt(8, bBean.getRe_seq()+1);	//답변글의 순서
+			pstmt.setInt(9, 0);						//답변글의 조회수
+			pstmt.setTimestamp(10, bBean.getDate());//답변글의 작성날짜 및 시간정보
+			pstmt.setString(11, bBean.getIp());		//답변글을 작성한 클라이언트의 IP주소
+			
+			pstmt.executeUpdate();	//답변글을 DB에 INSERT
+			
+		} catch (Exception e) {
+			System.out.println("reInsertBoard메소드 내부에서 오류 : " + e);
+		} finally {
+			자원해제();
+		}
+	}//reInsertBoard메소드 끝
+	
 }//BoardDAO클래스 끝
+
 
 
 

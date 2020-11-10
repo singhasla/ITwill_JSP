@@ -33,15 +33,14 @@
 	//한글처리
 	request.setCharacterEncoding("UTF-8");
 	
-	//notice.jsp페이지에서 글하나를 클릭했을때  num, pageNum 전달 받기 
+//content.jsp에서 글수정 버튼 클릭했을때 요청한 값 전달 받기 
+	//1.수정하기 전의 글정보를 데이터베이스에서 검색해오기 위해 글번호 얻기 
 	int num = Integer.parseInt(request.getParameter("num"));
+	//2.수정할 글번호가 속해 있는 페이지 번호 얻기 
 	String pageNum = request.getParameter("pageNum");
 
 	//DB작업을 위한 DAO객체 생성
 	BoardDAO dao =  new BoardDAO();
-	
-	//DB에 존재하는 글의 조회수 1증가시키기 위해 메소드 호출
-	dao.updateReadCount(num); 
 	
 	//글번호를 매개변수로 전달 하여  글번호에 해당되는 글의 정보를 검색해옴
 	BoardBean boardBean = dao.getBoard(num); 
@@ -54,7 +53,7 @@
 	String DBContent = "";//검색한 글 내용
 	//검색한 글내용이 존재한다면.. 엔터키를 사용해서 처리한 글내용을 받아온다
 	if(boardBean.getContent() != null){
-		DBContent = boardBean.getContent().replace("\r\n","<br>");
+		DBContent = boardBean.getContent().replace("<br>", "\r\n");
 	}
 	//답변글 처리 관련 검색한 필드의 정보 얻기
 	int DBRe_ref = boardBean.getRe_ref();//주글의 그룹번호
@@ -87,52 +86,40 @@
 
 		<!-- 게시판 -->
 		<article>
-			<h1>Notice Content</h1>
+			<h1>Notice Update[글수정요청페이지]</h1>
+			
+		<form action="updatePro.jsp" method="post">
+		
+			<input type="hidden" name="num" value="<%=num%>" >
+			<input type="hidden" name="pageNum" value="<%=pageNum%>">
+			
 			<table id="notice">
 				<tr>
-					<td>글번호</td>
-					<td><%=DBnum%></td>
-					<td>조회수</td>
-					<td><%=DBReadcount%></td>
+					<td>이름</td>
+					<td><input type="text" name="name" value="<%=DBName%>"></td>	
 				</tr>
 				<tr>
-					<td>작성자</td>
-					<td><%=DBName%></td>
-					<td>작성일</td>
-					<td><%=DBDate%></td>
+					<td>비밀번호</td>
+					<td><input type="password" name="passwd"></td>
 				</tr>
 				<tr>
 					<td>글제목</td>
-					<td colspan="3"><%=DBSubject%></td>
+					<td><input type="text" name="subject" value="<%=DBSubject%>">  </td>
 				</tr>
 				<tr>
 					<td>글내용</td>
-					<td colspan="3"><%=DBContent%></td>
+					<td><textarea name="content" rows="13" cols="40"><%=DBContent%></textarea></td>
 				</tr>
-			</table>
-			
-			<%
-				String id = (String)session.getAttribute("id");
-				if(id != null){ //로그인 되어있다면
-			%>		
+				
+			</table>	
 			<div id="table_search">
-				<input type="button" 
-					   value="글수정"  
-					   onclick="location.href='update.jsp?num=<%=DBnum%>&pageNum=<%=pageNum%>'" 
-					   class="btn"  />
-				<input type="button" 
-					   value="글삭제"  
-					   onclick="location.href='delete.jsp?num=<%=DBnum%>&pageNum=<%=pageNum%>'" 
-					   class="btn"  />	   
-				<input type="button" 
-					   value="답글쓰기"  
-					   onclick="location.href='reWrite.jsp?num=<%=DBnum%>&re_ref=<%=DBRe_ref %>&re_lev=<%=DBRe_lev %>&re_seq=<%=DBRe_seq%>'" 
-					   class="btn"  />	   
-			
-			<%}%>	
-		
-				<input type="button" value="글목록보기" class="btn" onclick="location.href='notice.jsp?pageNum=<%=pageNum%>'">
+				<input type="submit" value="글수정" class="btn">
+				<input type="reset" value="다시작성" class="btn">
+				<input type="button" value="목록보기" class="btn" 
+				       onclick="location.href='notice.jsp?pageNum=<%=pageNum%>'">
 			</div>
+		</form>
+		
 			<div class="clear"></div>
 			
 		</article>
