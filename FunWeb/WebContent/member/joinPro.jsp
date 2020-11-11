@@ -20,7 +20,7 @@
    		   MemberDAO객체의 insertMember메소드 호출시... MemberBean객체를 매개변수로 전달 하여 작업함. 
    		참고- MemberDAO클래스 내부에 insertMember메소드 만들어야 호출할수 있음.
    --%>
-   <jsp:useBean id="memberdao"   class="member.MemberDAO"/>
+   <jsp:useBean id="memberdao" class="member.MemberDAO"/>
    <%
    	memberdao.insertMember(memberbean);//호출 
      

@@ -48,7 +48,7 @@
 		pageNum = "1";
 	}
 	
-	//현재 화면에서 클릭한 페이지번호(현재 보여지는 화면)를 정수로 변화해서 저장
+	//현재 화면에서 클릭한 페이지번호(현재 보여지는 화면)를 정수로 변환해서 저장
 	int currentPage = Integer.parseInt(pageNum);
 	
 	//각 페이지 마다  가장 첫번째로 보여질 시작 글번호 구하기
@@ -159,9 +159,51 @@
 			</div>
 			<div class="clear"></div>
 			<div id="page_control">
-				<a href="#">Prev</a> <a href="#">1</a><a href="#">2</a><a href="#">3</a>
-				<a href="#">4</a><a href="#">5</a><a href="#">6</a> <a href="#">7</a><a
-					href="#">8</a><a href="#">9</a> <a href="#">10</a> <a href="#">Next</a>
+				<%
+					if(count>0){
+						
+						//전체 페이지 수 구하기 
+						//=> 글 20개, 한 페이지당 보여줄 글개수 10개 = 2개의 페이지
+						//=> 글 25개, 한 페이지당 보여줄 글개수 10개 = 3개의 페이지
+						//조건삼항연산자 사용
+						int pageCount = count / pageSize + (count % pageSize == 0 ? 0:1);	//이해완료
+						
+						//한 화면(한 블럭)에 보여줄 페이지 개수 설정
+						int pageBlock = 2;
+						
+						//시작페이지 번호 구하기
+						// 1 ~ 10 = 1		11 ~ 20 = 11		21 ~ 30 = 21
+						//	( (현재 클릭한 페이지번호/한블럭에 보여줄 페이지개수) - (현재 클릭한 페이지번호를 한블럭에 보여줄 페이지개수로 나눈 나머지값) ) * 한블럭에 보여줄 페이지 개수 + 1
+						int startPage = ((currentPage / pageBlock) - (currentPage%pageBlock==0? 1:0)) * pageBlock + 1;
+						
+						//끝페이지 번호 구하기
+						// 1 ~ 10 = 10		11 ~ 20 = 20		21 ~ 30 = 30
+						// 끝페이지 번호 = 시작페이지번호 + 한 블럭에 보여줄 글갯수 -1
+						int endPage = startPage + pageBlock - 1 ;
+						
+						//[이전] : 시작페이지 번호가 한 블럭에 보여줄 페이지 개수보다 클 때
+						if(startPage > pageBlock){
+							%>
+								<a href="notice.jsp?pageNum=<%=startPage-pageBlock %>">[이전]</a>
+							<%
+						}
+			
+						//페이지 번호 구현 [1] [2] [3]....
+						for(int i = startPage; i <= endPage ; i++){
+							%>
+								<a href="notice.jsp?pageNum=<%=i %>">[<%=i %>]</a>
+							<%
+						}
+						
+						//[다음] : 끝페이지 번호가 전체 페이지개수보다 작을 때
+						if(endPage < pageCount){
+							%>
+								<a href="notice.jsp?pageNum=<%=startPage+pageBlock %>">[다음]</a>
+							<%
+						}
+						
+					}
+				 %>
 			</div>
 		</article>
 		<!-- 게시판 -->

@@ -73,7 +73,7 @@
 					<input type="submit" value="글삭제" class="btn" >
 					<input type="reset" value="다시작성" class="btn" >
 					<input type="button" value="글목록" class="btn" 
-					       onclick="loction.href='notice.jsp?pageNum=<%=pageNum%>'" >
+					       onclick="location.href='notice.jsp?pageNum=<%=pageNum%>'" >
 				</div>
 			</form>		
 			<div class="clear"></div>
