@@ -1,3 +1,6 @@
+<%@page import="java.io.BufferedOutputStream"%>
+<%@page import="java.io.BufferedInputStream"%>
+<%@page import="java.io.FileInputStream"%>
 <%@page import="java.io.File"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
@@ -44,6 +47,46 @@
 		//new File(실제 다운로드할 파일이 존재하는 파일경로)
 		File file = new File(realPath + "/" + new String( name.getBytes("8859_1"),"UTF-8") );
 		
+		
+		//1024바이트씩 파일의 내용을 읽어들이기 위해 배열생성
+		byte[] data = new byte[1024];
+		
+		if(file.isFile()) {	//File 형식이 맞다면?
+		
+				try {
+					/* 다운로드할 파일의 내용을 읽어들이기 위한 스트림 통로준비 */
+					//1바이트 단위로 파일의 데이터를 읽어들이기 위한 통로 new FileInputStream(file)
+					//1바이트 단위로 읽어들인 파일의 데이터를 내부 버퍼에 저장해두었다가 한번에 읽어들이기 위한 통로
+					//new BufferedInputStream(...)
+					BufferedInputStream input = new BufferedInputStream(new FileInputStream(file)); 
+					
+					/* 읽어들인 파일의 내용을 버퍼메모리 공간에서 바이트단위로 웹브라우저에 내보낼 스트림통로준비 */
+					BufferedOutputStream output = new BufferedOutputStream(response.getOutputStream());
+					
+					//파일내용을 1024바이트씩 끊어서 웹브라우저에 내보내기 위해
+					//파일 전체 크기중에서 data배열의 바이트 크기만큼 파일데이터를
+					//BufferedInputStream스트림통로객체의 내부버퍼에서 읽어들여 저장하는 변수
+					int read;
+					
+					//파일 내용을 1024바이트씩 끊어서 내부버퍼에서 읽어들이는데
+					//읽어들인 파일내용이 존재하는 동안 반복
+					while((read = input.read(data)) != -1) {	//read()메소드의 반환값은 읽어들이기에 성공한 바이트수를 반환
+						
+						//전체 data배열의 0부터 1024개 바이트씩 묵어서 출력버퍼에서 클라이언트의 웹브라우저로 내보낸다.
+						output.write(data, 0, read);
+						
+					}
+					
+					//출력버퍼 공간이 가득차지 않아도 파일내용을 강제적으로 사용자의 화면에 내보내는 기능 제공
+					output.flush();
+					
+					//자원해제
+					input.close();
+					output.close();
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
+		}//if끝
 	%>
 </body>
 </html>
