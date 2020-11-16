@@ -10,69 +10,69 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
-//자바빈 클래스의 종류중 DAO역할을 하는 클래스
-//DB연결 후 작업하는 클래스 (비즈니스로직을 처리하는 클래스)
+//�옄諛붾퉰 �겢�옒�뒪�쓽 醫낅쪟以� DAO�뿭�븷�쓣 �븯�뒗 �겢�옒�뒪
+//DB�뿰寃� �썑 �옉�뾽�븯�뒗 �겢�옒�뒪 (鍮꾩쫰�땲�뒪濡쒖쭅�쓣 泥섎━�븯�뒗 �겢�옒�뒪)
 public class BoardDAO {
 	
-	Connection con = null; //DB와 미리연결을 맺은 접속을 나타내는 객체를 저장할 조상 인터페이스 타입의 변수 
-	PreparedStatement pstmt = null; //DB(jspbeginner)에 SQL문을 전송해서 실행할 객체를 저장할 변수 
-	ResultSet rs = null;//DB에 SELECT검색한 결과데이터들을 임시로 저장해 놓을 수 있는
-						//ResultSet객체를 저장할 변수 
+	Connection con = null; //DB�� 誘몃━�뿰寃곗쓣 留븐� �젒�냽�쓣 �굹���궡�뒗 媛앹껜瑜� ���옣�븷 議곗긽 �씤�꽣�럹�씠�뒪 ���엯�쓽 蹂��닔 
+	PreparedStatement pstmt = null; //DB(jspbeginner)�뿉 SQL臾몄쓣 �쟾�넚�빐�꽌 �떎�뻾�븷 媛앹껜瑜� ���옣�븷 蹂��닔 
+	ResultSet rs = null;//DB�뿉 SELECT寃��깋�븳 寃곌낵�뜲�씠�꽣�뱾�쓣 �엫�떆濡� ���옣�빐 �넃�쓣 �닔 �엳�뒗
+						//ResultSet媛앹껜瑜� ���옣�븷 蹂��닔 
 	
 	
-	//DataSource커넥션풀을 얻고
-	//커넥션풀 내부에 있는 Connection객체를 얻는 메소드
+	//DataSource而ㅻ꽖�뀡���쓣 �뼸怨�
+	//而ㅻ꽖�뀡�� �궡遺��뿉 �엳�뒗 Connection媛앹껜瑜� �뼸�뒗 硫붿냼�뱶
 	private Connection getConnection() throws Exception{
 		
-		//톰캣이 각 프로젝트에 접근할수 있는 Context객체의 경로를 알고 있는 객체
+		//�넱罹ｌ씠 媛� �봽濡쒖젥�듃�뿉 �젒洹쇳븷�닔 �엳�뒗 Context媛앹껜�쓽 寃쎈줈瑜� �븣怨� �엳�뒗 媛앹껜
 		Context init = new InitialContext();
 		
-		//DataSource커넥션풀 얻기 
+		//DataSource而ㅻ꽖�뀡�� �뼸湲� 
 		DataSource ds = (DataSource)init.lookup("java:comp/env/jdbc/jspbeginner");
 		
-		//DataSource커넥션풀 내부에 있는 Connection객체 얻기
+		//DataSource而ㅻ꽖�뀡�� �궡遺��뿉 �엳�뒗 Connection媛앹껜 �뼸湲�
 		con = ds.getConnection();
 		
-		return con;//DB와 미리 연결을 맺어 놓은 접속을 나타내는 Connection객체 반환
-	}//getConnection메소드 끝
+		return con;//DB�� 誘몃━ �뿰寃곗쓣 留븐뼱 �넃�� �젒�냽�쓣 �굹���궡�뒗 Connection媛앹껜 諛섑솚
+	}//getConnection硫붿냼�뱶 �걹
 	
-	public void 자원해제(){
+	public void ResourceFree(){
 		try{
 			if(pstmt != null){ pstmt.close();}
 			if(rs != null){rs.close();}
 			if(con != null){con.close();}
 		}catch(Exception e){
-			System.out.println("자원해제 실패 : " + e);	
+			System.out.println("ResourceFree �떎�뙣 : " + e);	
 		}
 	}
 	
-	//DB에 새글 추가 메소드
+	//DB�뿉 �깉湲� 異붽� 硫붿냼�뱶
 	public void insertBoard(BoardBean bBean){
 		
-		//DB에 추가할 글번호를 저장할 변수 
+		//DB�뿉 異붽��븷 湲�踰덊샇瑜� ���옣�븷 蹂��닔 
 		int num = 0;
 		
-		//SQL문 저장할 변수선언
+		//SQL臾� ���옣�븷 蹂��닔�꽑�뼵
 		String sql = "";
 		
 		try {
-			//커넥션풀에서 커넥션객체 얻기(DB연결)
+			//而ㅻ꽖�뀡���뿉�꽌 而ㅻ꽖�뀡媛앹껜 �뼸湲�(DB�뿰寃�)
 			con = getConnection();
 			
-			//DB에 저장된 글의 가장 최신 글번호 검색해 오는 SELECT문
+			//DB�뿉 ���옣�맂 湲��쓽 媛��옣 理쒖떊 湲�踰덊샇 寃��깋�빐 �삤�뒗 SELECT臾�
 			sql = "select max(num) from board";
-			//참고 : DB에 글이 저장되어 있지 않는경우  새로추가할 글번호 는? 1
-			//      DB에 글이 저장되어 있는 경우  검색한 가장 최신글번호 + 1 데이터를 새로추가할 글번호로 지정
+			//李멸퀬 : DB�뿉 湲��씠 ���옣�릺�뼱 �엳吏� �븡�뒗寃쎌슦  �깉濡쒖텛媛��븷 湲�踰덊샇 �뒗? 1
+			//      DB�뿉 湲��씠 ���옣�릺�뼱 �엳�뒗 寃쎌슦  寃��깋�븳 媛��옣 理쒖떊湲�踰덊샇 + 1 �뜲�씠�꽣瑜� �깉濡쒖텛媛��븷 湲�踰덊샇濡� 吏��젙
 			
 			pstmt = con.prepareStatement(sql);
 			
 			rs = pstmt.executeQuery();
 			
-			if(rs.next()){//가장 최신 글번호가 검색된다면?
-				//가장최신 글번호  + 1 데이터를 새로 추가할 글번호로 지정
+			if(rs.next()){//媛��옣 理쒖떊 湲�踰덊샇媛� 寃��깋�맂�떎硫�?
+				//媛��옣理쒖떊 湲�踰덊샇  + 1 �뜲�씠�꽣瑜� �깉濡� 異붽��븷 湲�踰덊샇濡� 吏��젙
 				num = rs.getInt(1) + 1;
-			}else{//가장 최신 글번호가 검색되지 않으면?(DB에 글이 없다면)
-				num = 1; //새로추가할 글번호를 1로 설정 
+			}else{//媛��옣 理쒖떊 湲�踰덊샇媛� 寃��깋�릺吏� �븡�쑝硫�?(DB�뿉 湲��씠 �뾾�떎硫�)
+				num = 1; //�깉濡쒖텛媛��븷 湲�踰덊샇瑜� 1濡� �꽕�젙 
 			}
 			
 			sql = "insert into board(num,name,passwd,"
@@ -80,41 +80,41 @@ public class BoardDAO {
 				+ "values(?,?,?,?,?,?,?,?,?,?,?);";
 			
 			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, num);//추가할 새글의 글번호
-			pstmt.setString(2, bBean.getName());//새글을 작성한 사람의 이름(id)
-			pstmt.setString(3, bBean.getPasswd());//추가할 새글의 비밀번호
-			pstmt.setString(4, bBean.getSubject());//추가할 새글의 제목
-			pstmt.setString(5, bBean.getContent());//글내용
-			pstmt.setInt(6, num); // 새글의 그룹번호는 새글의 글번호로 넣는다.
-			pstmt.setInt(7, 0); //새글 (주글) 추가시 들여쓰기 정도값은 0으로 넣는다.
-			pstmt.setInt(8, 0); //주글의 순서값 
-			pstmt.setInt(9, 0); //추가하는 새글의 조회수 0
-			pstmt.setTimestamp(10, bBean.getDate()); //새글을 추가한 날짜 정보 
-			pstmt.setString(11, bBean.getIp());//새글을 작성한 사람의  IP주소 정보 
+			pstmt.setInt(1, num);//異붽��븷 �깉湲��쓽 湲�踰덊샇
+			pstmt.setString(2, bBean.getName());//�깉湲��쓣 �옉�꽦�븳 �궗�엺�쓽 �씠由�(id)
+			pstmt.setString(3, bBean.getPasswd());//異붽��븷 �깉湲��쓽 鍮꾨�踰덊샇
+			pstmt.setString(4, bBean.getSubject());//異붽��븷 �깉湲��쓽 �젣紐�
+			pstmt.setString(5, bBean.getContent());//湲��궡�슜
+			pstmt.setInt(6, num); // �깉湲��쓽 洹몃９踰덊샇�뒗 �깉湲��쓽 湲�踰덊샇濡� �꽔�뒗�떎.
+			pstmt.setInt(7, 0); //�깉湲� (二쇨�) 異붽��떆 �뱾�뿬�벐湲� �젙�룄媛믪� 0�쑝濡� �꽔�뒗�떎.
+			pstmt.setInt(8, 0); //二쇨��쓽 �닚�꽌媛� 
+			pstmt.setInt(9, 0); //異붽��븯�뒗 �깉湲��쓽 議고쉶�닔 0
+			pstmt.setTimestamp(10, bBean.getDate()); //�깉湲��쓣 異붽��븳 �궇吏� �젙蹂� 
+			pstmt.setString(11, bBean.getIp());//�깉湲��쓣 �옉�꽦�븳 �궗�엺�쓽  IP二쇱냼 �젙蹂� 
 			
-			//insert문장 실행
+			//insert臾몄옣 �떎�뻾
 			pstmt.executeUpdate();
 			
 		} catch (Exception e) {
-			System.out.println("insertBoard메소드 내부에서 실행 오류 : " + e);
+			System.out.println("insertBoard硫붿냼�뱶 �궡遺��뿉�꽌 �떎�뻾 �삤瑜� : " + e);
 		} finally {
-			자원해제();
+			ResourceFree();
 		}	
-	}//insertBoard메소드 끝
+	}//insertBoard硫붿냼�뱶 �걹
 	
 	
-	//DB에 저장된 전체 글 개수를 검색해서 반환 해주는 메소드 
+	//DB�뿉 ���옣�맂 �쟾泥� 湲� 媛쒖닔瑜� 寃��깋�빐�꽌 諛섑솚 �빐二쇰뒗 硫붿냼�뱶 
 	public int getBoardCount(){
 		
-		int count = 0; //검색한 글개수를 저장할 변수 
+		int count = 0; //寃��깋�븳 湲�媛쒖닔瑜� ���옣�븷 蹂��닔 
 		
 		String sql = "";
 		
 		try {
-			//DB연결
+			//DB�뿰寃�
 			con = getConnection();
 			
-			//전체 글수 조회 SELECT문장 만들기
+			//�쟾泥� 湲��닔 議고쉶 SELECT臾몄옣 留뚮뱾湲�
 			sql = "select count(*) from board";
 			
 			pstmt = con.prepareStatement(sql);
@@ -126,17 +126,17 @@ public class BoardDAO {
 			}
 			
 		} catch (Exception e) {
-			System.out.println("getBoardCount에서 오류:" + e);
+			System.out.println("getBoardCount�뿉�꽌 �삤瑜�:" + e);
 		}finally {
-			자원해제();
+			ResourceFree();
 		}
-		return count;//조회한 글 개수 리턴 
+		return count;//議고쉶�븳 湲� 媛쒖닔 由ы꽩 
 		
-	}//getBoardCount()메소드 끝
+	}//getBoardCount()硫붿냼�뱶 �걹
 	
-	//notice.jsp페이지에서 호출하는 메소드로
-	//각페이지마다 첫번째로 보여질 시작글번호와  한페이지당 보여질 글 개수를 매개변수로 전달 받아
-	//한페이지당 보여질 글개수만큼 검색해서 가져오는 메소드 
+	//notice.jsp�럹�씠吏��뿉�꽌 �샇異쒗븯�뒗 硫붿냼�뱶濡�
+	//媛곹럹�씠吏�留덈떎 泥ル쾲吏몃줈 蹂댁뿬吏� �떆�옉湲�踰덊샇��  �븳�럹�씠吏��떦 蹂댁뿬吏� 湲� 媛쒖닔瑜� 留ㅺ컻蹂��닔濡� �쟾�떖 諛쏆븘
+	//�븳�럹�씠吏��떦 蹂댁뿬吏� 湲�媛쒖닔留뚰겮 寃��깋�빐�꽌 媛��졇�삤�뒗 硫붿냼�뱶 
 	public List<BoardBean>  getBoardList(int startRow,  int pageSize){
 		
 		String sql = "";
@@ -144,10 +144,10 @@ public class BoardDAO {
 		List<BoardBean> boardList = new ArrayList<BoardBean>();
 		
 		try {
-			con = getConnection(); //DB연결
-			//SELECT문장 만들기
-			//정렬 re_ref 내림차순정렬 후 re_seq 오름차순정렬 하는데..
-			//limt 각페이지마다 첫번째로 보여질 시작글번호, 한페이지당 보여줄 글개수 
+			con = getConnection(); //DB�뿰寃�
+			//SELECT臾몄옣 留뚮뱾湲�
+			//�젙�젹 re_ref �궡由쇱감�닚�젙�젹 �썑 re_seq �삤由꾩감�닚�젙�젹 �븯�뒗�뜲..
+			//limt 媛곹럹�씠吏�留덈떎 泥ル쾲吏몃줈 蹂댁뿬吏� �떆�옉湲�踰덊샇, �븳�럹�씠吏��떦 蹂댁뿬以� 湲�媛쒖닔 
 			sql = "select  * from board order by re_ref desc, re_seq asc limit ?,?";
 			
 			pstmt = con.prepareStatement(sql);
@@ -171,41 +171,41 @@ public class BoardDAO {
 				bBean.setReadcount(rs.getInt("readcount"));
 				bBean.setSubject(rs.getString("subject"));
 				
-				//BoardBean객체 => Arraylist배열에 추가
+				//BoardBean媛앹껜 => Arraylist諛곗뿴�뿉 異붽�
 				boardList.add(bBean);
 			}
 			
 		} catch (Exception e) {
-			System.out.println("getBoardList메소드 내부에서 오류 : " + e);
+			System.out.println("getBoardList硫붿냼�뱶 �궡遺��뿉�꽌 �삤瑜� : " + e);
 		} finally{
-			자원해제();
+			ResourceFree();
 		}
-		return boardList;//ArrayList리턴
+		return boardList;//ArrayList由ы꽩
 	
-	}//getBoardList메소드 끝
+	}//getBoardList硫붿냼�뱶 �걹
 	
-	//하나의 글을 클릭했을때  글번호를 매개변수로 전달 받아.
-	//글번호에 해당되는 글 조회수 정보를 1 증가 (업데이트) 시키는 메소드
+	//�븯�굹�쓽 湲��쓣 �겢由��뻽�쓣�븣  湲�踰덊샇瑜� 留ㅺ컻蹂��닔濡� �쟾�떖 諛쏆븘.
+	//湲�踰덊샇�뿉 �빐�떦�릺�뒗 湲� 議고쉶�닔 �젙蹂대�� 1 利앷� (�뾽�뜲�씠�듃) �떆�궎�뒗 硫붿냼�뱶
 	public void updateReadCount(int num){
 		String sql = "";
 		try {
-			//DB연결
+			//DB�뿰寃�
 			con = getConnection();
-			//UPDATE구문 만들기-> 매개변수로 전달 받는 글번호에 해당되는 글의 조회수정보를 1증가(업데이트)
+			//UPDATE援щЦ 留뚮뱾湲�-> 留ㅺ컻蹂��닔濡� �쟾�떖 諛쏅뒗 湲�踰덊샇�뿉 �빐�떦�릺�뒗 湲��쓽 議고쉶�닔�젙蹂대�� 1利앷�(�뾽�뜲�씠�듃)
 			sql = "update board set readcount=readcount+1 where num=?";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setInt(1, num);
 			pstmt.executeUpdate();
 			
 		} catch (Exception e) {
-			System.out.println("updateReadCount메소드에서 오류 : " + e);
+			System.out.println("updateReadCount硫붿냼�뱶�뿉�꽌 �삤瑜� : " + e);
 		} finally{
-			자원해제();
+			ResourceFree();
 		}
-	}//updateReadCount메소드 끝
+	}//updateReadCount硫붿냼�뱶 �걹
 	
 	
-	//글번호를 매개변수로 전달 받아 글번호에 해당되는 글의 정보를 검색 하는 메소드
+	//湲�踰덊샇瑜� 留ㅺ컻蹂��닔濡� �쟾�떖 諛쏆븘 湲�踰덊샇�뿉 �빐�떦�릺�뒗 湲��쓽 �젙蹂대�� 寃��깋 �븯�뒗 硫붿냼�뱶
 	public BoardBean getBoard(int num){
 		
 		String sql = "";
@@ -213,9 +213,9 @@ public class BoardDAO {
 		BoardBean bBean = new BoardBean();
 		
 		try {
-			//DB연결
+			//DB�뿰寃�
 			con = getConnection();
-			//SELECT문장 만들기 - 매개변수로 전달 받는 글번호에 해당되는 글정보검색
+			//SELECT臾몄옣 留뚮뱾湲� - 留ㅺ컻蹂��닔濡� �쟾�떖 諛쏅뒗 湲�踰덊샇�뿉 �빐�떦�릺�뒗 湲��젙蹂닿��깋
 			sql = "select  * from board where num=?";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setInt(1, num);
@@ -235,55 +235,55 @@ public class BoardDAO {
 				bBean.setSubject(rs.getString("subject"));
 			}
 		} catch (Exception e) {
-			System.out.println("getBoard메소드에서 오류 :" + e);
+			System.out.println("getBoard硫붿냼�뱶�뿉�꽌 �삤瑜� :" + e);
 		} finally {
-			자원해제();
+			ResourceFree();
 		}	
 		return bBean;
-	}//getBoard메소드 끝
+	}//getBoard硫붿냼�뱶 �걹
 		
 	
-	//삭제할 글번호와 글을 삭제하기 위해 입력했던 비밀번호를 매개변수로 전달받아..
-	//삭제할 글번호에 해당되는 비밀번호를 검색하여
-	//검색한 비밀번호와 입력했던 비밀번호가 동일하면 글을 DELETE합니다.
-	//DELETE에 성공하면  check = 1 로 저장하여 반환 하고 
-	//DELETE에 실패하면  check = 0 로 저장하여  deletePro.jsp로 반환함.
+	//�궘�젣�븷 湲�踰덊샇�� 湲��쓣 �궘�젣�븯湲� �쐞�빐 �엯�젰�뻽�뜕 鍮꾨�踰덊샇瑜� 留ㅺ컻蹂��닔濡� �쟾�떖諛쏆븘..
+	//�궘�젣�븷 湲�踰덊샇�뿉 �빐�떦�릺�뒗 鍮꾨�踰덊샇瑜� 寃��깋�븯�뿬
+	//寃��깋�븳 鍮꾨�踰덊샇�� �엯�젰�뻽�뜕 鍮꾨�踰덊샇媛� �룞�씪�븯硫� 湲��쓣 DELETE�빀�땲�떎.
+	//DELETE�뿉 �꽦怨듯븯硫�  check = 1 濡� ���옣�븯�뿬 諛섑솚 �븯怨� 
+	//DELETE�뿉 �떎�뙣�븯硫�  check = 0 濡� ���옣�븯�뿬  deletePro.jsp濡� 諛섑솚�븿.
 	public int deleteBoard(int num, String passwd){
 		int check = 0;
 		String sql = "";
 		try {
-			//DB연결
+			//DB�뿰寃�
 			con = getConnection();
 			sql = "select passwd from board where num=?";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setInt(1, num);
 			rs = pstmt.executeQuery();
-			if(rs.next()){//해당삭제할 글번호에 대한 글의 비밀번호가 검색되면
-				//입력한 비밀번호와 검색한 글의 비밀번호가 동일 하면?
+			if(rs.next()){//�빐�떦�궘�젣�븷 湲�踰덊샇�뿉 ���븳 湲��쓽 鍮꾨�踰덊샇媛� 寃��깋�릺硫�
+				//�엯�젰�븳 鍮꾨�踰덊샇�� 寃��깋�븳 湲��쓽 鍮꾨�踰덊샇媛� �룞�씪 �븯硫�?
 				if(passwd.equals(rs.getString("passwd"))){
 					//check = 1;
 					check = 1;
-					//delete문장 작성
+					//delete臾몄옣 �옉�꽦
 					sql = "delete from board where num=?";
 					pstmt = con.prepareStatement(sql);
 					pstmt.setInt(1, num);
 					pstmt.executeUpdate();
-				}else{//입력한 비밀번호와 검색한 글의 비밀번호가 다르면?
+				}else{//�엯�젰�븳 鍮꾨�踰덊샇�� 寃��깋�븳 湲��쓽 鍮꾨�踰덊샇媛� �떎瑜대㈃?
 					check = 0;
 				}
 			}		
 		} catch (Exception e) {
-			System.out.println("deleteBoard메소드 내부에서 오류 : " + e);
+			System.out.println("deleteBoard硫붿냼�뱶 �궡遺��뿉�꽌 �삤瑜� : " + e);
 		} finally{
-			자원해제();
+			ResourceFree();
 		}		
-		return check;//deletePro.jsp로 비밀번호 일치 유무 1 또는 0을 반환
-	}//deleteBoard메소드 끝
+		return check;//deletePro.jsp濡� 鍮꾨�踰덊샇 �씪移� �쑀臾� 1 �삉�뒗 0�쓣 諛섑솚
+	}//deleteBoard硫붿냼�뱶 �걹
 	
 	
-	//수정을 위해 입력한 글정보가 저장된 BoardBean객체를 매개변수로 전달받아
-	//UPDATE문장 완성후 DB와 연결하여 UPDATE구문 실행할 메소드
-	//조건 : DB에 저장된 글의 비밀번호와 글을 수정하기 위해 입력한 비밀번호가 일치할 때만 UPDATE함
+	//�닔�젙�쓣 �쐞�빐 �엯�젰�븳 湲��젙蹂닿� ���옣�맂 BoardBean媛앹껜瑜� 留ㅺ컻蹂��닔濡� �쟾�떖諛쏆븘
+	//UPDATE臾몄옣 �셿�꽦�썑 DB�� �뿰寃고븯�뿬 UPDATE援щЦ �떎�뻾�븷 硫붿냼�뱶
+	//議곌굔 : DB�뿉 ���옣�맂 湲��쓽 鍮꾨�踰덊샇�� 湲��쓣 �닔�젙�븯湲� �쐞�빐 �엯�젰�븳 鍮꾨�踰덊샇媛� �씪移섑븷 �븣留� UPDATE�븿
 	public int updateBoard(BoardBean bBean){
 		
 		int check = 0;
@@ -301,7 +301,7 @@ public class BoardDAO {
 			rs = pstmt.executeQuery();
 			
 			if(rs.next()){
-				//글수정을 위해 입력한 비밀번호와 검색한 글의 비밀번호를 비교해 동일하면
+				//湲��닔�젙�쓣 �쐞�빐 �엯�젰�븳 鍮꾨�踰덊샇�� 寃��깋�븳 湲��쓽 鍮꾨�踰덊샇瑜� 鍮꾧탳�빐 �룞�씪�븯硫�
 				if( bBean.getPasswd().equals(rs.getString("passwd")) ){
 					check = 1;
 					sql = "UPDATE board SET name=?, subject=?, content=? WHERE num=?";
@@ -311,87 +311,87 @@ public class BoardDAO {
 					pstmt.setString(3, bBean.getContent());
 					pstmt.setInt(4, bBean.getNum());
 					pstmt.executeUpdate();
-				} else {	//글수정을 위해 입력한 비밀번호가 틀리면
+				} else {	//湲��닔�젙�쓣 �쐞�빐 �엯�젰�븳 鍮꾨�踰덊샇媛� ��由щ㈃
 					check = 0;
 				}
 			}
 			
 		} catch (Exception e) {
-			System.out.println("updateBoard메소드 내부에서 오류 : " + e);
+			System.out.println("updateBoard硫붿냼�뱶 �궡遺��뿉�꽌 �삤瑜� : " + e);
 		} finally {
-			자원해제();
+			ResourceFree();
 		}
 		
-		return check;	//updatePro.jsp로 check변수값 반환
+		return check;	//updatePro.jsp濡� check蹂��닔媛� 諛섑솚
 		
-	}//updateBoard메소드 끝
+	}//updateBoard硫붿냼�뱶 �걹
 	
 	
 	
 	/* 
-	 * 답변 달기 규칙 
+	 * �떟蹂� �떖湲� 洹쒖튃 
 	 * 
-	 *	1. 답글 그룹번호(re_ref)는 주글의 그룹번호(re_ref)를 사용한다.
-	 * 	2. 같은 그룹의 글들 내의 순서값(re_seq)은 주글의 re_seq에서 +1증가한 값을 넣어준다.
-	 * 	3. 답글의 들여쓰기 정도값(re_lev)은 주글의 re_lev값에 +1 증가한 값을 넣어서 사용한다.
+	 *	1. �떟湲� 洹몃９踰덊샇(re_ref)�뒗 二쇨��쓽 洹몃９踰덊샇(re_ref)瑜� �궗�슜�븳�떎.
+	 * 	2. 媛숈� 洹몃９�쓽 湲��뱾 �궡�쓽 �닚�꽌媛�(re_seq)�� 二쇨��쓽 re_seq�뿉�꽌 +1利앷��븳 媛믪쓣 �꽔�뼱以��떎.
+	 * 	3. �떟湲��쓽 �뱾�뿬�벐湲� �젙�룄媛�(re_lev)�� 二쇨��쓽 re_lev媛믪뿉 +1 利앷��븳 媛믪쓣 �꽔�뼱�꽌 �궗�슜�븳�떎.
 	 *  
-	 *  답변글을 DB에 INSERT하는 메소드 만들기
+	 *  �떟蹂�湲��쓣 DB�뿉 INSERT�븯�뒗 硫붿냼�뱶 留뚮뱾湲�
 	 */
-	public void reInsertBoard(BoardBean bBean){	//reWritePro.jsp에서 호출하는 메소드로
-												//bBean객체 내에는 답글정보와 주글정보가 담겨있다.
+	public void reInsertBoard(BoardBean bBean){	//reWritePro.jsp�뿉�꽌 �샇異쒗븯�뒗 硫붿냼�뱶濡�
+												//bBean媛앹껜 �궡�뿉�뒗 �떟湲��젙蹂댁� 二쇨��젙蹂닿� �떞寃⑥엳�떎.
 		String sql = "";
-		//답글의 글번호를 만들어서 저장할 변수
+		//�떟湲��쓽 湲�踰덊샇瑜� 留뚮뱾�뼱�꽌 ���옣�븷 蹂��닔
 		int num = 0;
 		
 		try {
 			
 			con = getConnection();
 			
-			//답글의 글번호를 구하기 위해 DB에 저장된 가장 최신글 번호 얻기
+			//�떟湲��쓽 湲�踰덊샇瑜� 援ы븯湲� �쐞�빐 DB�뿉 ���옣�맂 媛��옣 理쒖떊湲� 踰덊샇 �뼸湲�
 			sql = "SELECT max(num) FROM board";
 			pstmt = con.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 			
-			if(rs.next()){	//최신글번호가 검색된다면
+			if(rs.next()){	//理쒖떊湲�踰덊샇媛� 寃��깋�맂�떎硫�
 				num = rs.getInt(1) + 1;
-			} else {	//DB에 글이 없다면
+			} else {	//DB�뿉 湲��씠 �뾾�떎硫�
 				num = 1;
 			}
 			
-			//re_seq 답글들 내의 순서재배치
-			//주글의 그룹과 같은 그룹이면서 주글의 seq값보다 큰 답변글들은? seq값을 1 증가시킨다.(re_seq = re_seq+1)
+			//re_seq �떟湲��뱾 �궡�쓽 �닚�꽌�옱諛곗튂
+			//二쇨��쓽 洹몃９怨� 媛숈� 洹몃９�씠硫댁꽌 二쇨��쓽 seq媛믩낫�떎 �겙 �떟蹂�湲��뱾��? seq媛믪쓣 1 利앷��떆�궓�떎.(re_seq = re_seq+1)
 			sql = "UPDATE board SET re_seq = re_seq+1 WHERE re_ref = ? AND re_seq > ?";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setInt(1, bBean.getRe_ref());
 			pstmt.setInt(2, bBean.getRe_seq());
 			pstmt.executeUpdate();
 			
-			/* 답변 달기 */
+			/* �떟蹂� �떖湲� */
 			//insert
 			sql = "INSERT INTO board VALUES(?,?,?, ?,?,?, ?,?,?, ?,?)";
 			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, num);	//추가할 답변글의 글번호
-			pstmt.setString(2, bBean.getName());	//답변글을 작성하는 사람의 이름
-			pstmt.setString(3, bBean.getPasswd());	//답변글의 비밀번호
-			pstmt.setString(4, bBean.getSubject());	//답변글의 제목
-			pstmt.setString(5, bBean.getContent());	//답변글의 내용
-			pstmt.setInt(6, bBean.getRe_ref());		//답변글의 그룹번호
-			pstmt.setInt(7, bBean.getRe_lev()+1);	//답변글의 들여쓰기정도값은 주글의 들여쓰기정도값에 +1 한값을 사용
-			pstmt.setInt(8, bBean.getRe_seq()+1);	//답변글의 순서
-			pstmt.setInt(9, 0);						//답변글의 조회수
-			pstmt.setTimestamp(10, bBean.getDate());//답변글의 작성날짜 및 시간정보
-			pstmt.setString(11, bBean.getIp());		//답변글을 작성한 클라이언트의 IP주소
+			pstmt.setInt(1, num);	//異붽��븷 �떟蹂�湲��쓽 湲�踰덊샇
+			pstmt.setString(2, bBean.getName());	//�떟蹂�湲��쓣 �옉�꽦�븯�뒗 �궗�엺�쓽 �씠由�
+			pstmt.setString(3, bBean.getPasswd());	//�떟蹂�湲��쓽 鍮꾨�踰덊샇
+			pstmt.setString(4, bBean.getSubject());	//�떟蹂�湲��쓽 �젣紐�
+			pstmt.setString(5, bBean.getContent());	//�떟蹂�湲��쓽 �궡�슜
+			pstmt.setInt(6, bBean.getRe_ref());		//�떟蹂�湲��쓽 洹몃９踰덊샇
+			pstmt.setInt(7, bBean.getRe_lev()+1);	//�떟蹂�湲��쓽 �뱾�뿬�벐湲곗젙�룄媛믪� 二쇨��쓽 �뱾�뿬�벐湲곗젙�룄媛믪뿉 +1 �븳媛믪쓣 �궗�슜
+			pstmt.setInt(8, bBean.getRe_seq()+1);	//�떟蹂�湲��쓽 �닚�꽌
+			pstmt.setInt(9, 0);						//�떟蹂�湲��쓽 議고쉶�닔
+			pstmt.setTimestamp(10, bBean.getDate());//�떟蹂�湲��쓽 �옉�꽦�궇吏� 諛� �떆媛꾩젙蹂�
+			pstmt.setString(11, bBean.getIp());		//�떟蹂�湲��쓣 �옉�꽦�븳 �겢�씪�씠�뼵�듃�쓽 IP二쇱냼
 			
-			pstmt.executeUpdate();	//답변글을 DB에 INSERT
+			pstmt.executeUpdate();	//�떟蹂�湲��쓣 DB�뿉 INSERT
 			
 		} catch (Exception e) {
-			System.out.println("reInsertBoard메소드 내부에서 오류 : " + e);
+			System.out.println("reInsertBoard硫붿냼�뱶 �궡遺��뿉�꽌 �삤瑜� : " + e);
 		} finally {
-			자원해제();
+			ResourceFree();
 		}
-	}//reInsertBoard메소드 끝
+	}//reInsertBoard硫붿냼�뱶 �걹
 	
-}//BoardDAO클래스 끝
+}//BoardDAO�겢�옒�뒪 �걹
 
 
 

@@ -9,60 +9,60 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
-//자바빈 클래스의 종류중 DAO역할을 하는 클래스
-//DB연결 후 작업하는 클래스 (비즈니스로직을 처리하는 클래스)
+//�옄諛붾퉰 �겢�옒�뒪�쓽 醫낅쪟以� DAO�뿭�븷�쓣 �븯�뒗 �겢�옒�뒪
+//DB�뿰寃� �썑 �옉�뾽�븯�뒗 �겢�옒�뒪 (鍮꾩쫰�땲�뒪濡쒖쭅�쓣 泥섎━�븯�뒗 �겢�옒�뒪)
 public class MemberDAO {
 
-	Connection con = null; //DB와 미리연결을 맺은 접속을 나타내는 객체를 저장할 조상 인터페이스 타입의 변수 
-	PreparedStatement pstmt = null; //DB(jspbeginner)에 SQL문을 전송해서 실행할 객체를 저장할 변수 
-	ResultSet rs = null;//DB에 SELECT검색한 결과데이터들을 임시로 저장해 놓을 수 있는
-						//ResultSet객체를 저장할 변수 
+	Connection con = null; //DB�� 誘몃━�뿰寃곗쓣 留븐� �젒�냽�쓣 �굹���궡�뒗 媛앹껜瑜� ���옣�븷 議곗긽 �씤�꽣�럹�씠�뒪 ���엯�쓽 蹂��닔 
+	PreparedStatement pstmt = null; //DB(jspbeginner)�뿉 SQL臾몄쓣 �쟾�넚�빐�꽌 �떎�뻾�븷 媛앹껜瑜� ���옣�븷 蹂��닔 
+	ResultSet rs = null;//DB�뿉 SELECT寃��깋�븳 寃곌낵�뜲�씠�꽣�뱾�쓣 �엫�떆濡� ���옣�빐 �넃�쓣 �닔 �엳�뒗
+						//ResultSet媛앹껜瑜� ���옣�븷 蹂��닔 
 	
 	
-	//DataSource커넥션풀을 얻고
-	//커넥션풀 내부에 있는 Connection객체를 얻는 메소드
+	//DataSource而ㅻ꽖�뀡���쓣 �뼸怨�
+	//而ㅻ꽖�뀡�� �궡遺��뿉 �엳�뒗 Connection媛앹껜瑜� �뼸�뒗 硫붿냼�뱶
 	private Connection getConnection() throws Exception{
 		
-		//톰캣이 각 프로젝트에 접근할수 있는 Context객체의 경로를 알고 있는 객체
+		//�넱罹ｌ씠 媛� �봽濡쒖젥�듃�뿉 �젒洹쇳븷�닔 �엳�뒗 Context媛앹껜�쓽 寃쎈줈瑜� �븣怨� �엳�뒗 媛앹껜
 		Context init = new InitialContext();
 		
-		//DataSource커넥션풀 얻기 
+		//DataSource而ㅻ꽖�뀡�� �뼸湲� 
 		DataSource ds = (DataSource)init.lookup("java:comp/env/jdbc/jspbeginner");
 		
-		//DataSource커넥션풀 내부에 있는 Connection객체 얻기
+		//DataSource而ㅻ꽖�뀡�� �궡遺��뿉 �엳�뒗 Connection媛앹껜 �뼸湲�
 		con = ds.getConnection();
 		
-		return con;//DB와 미리 연결을 맺어 놓은 접속을 나타내는 Connection객체 반환
-	}//getConnection메소드 끝
+		return con;//DB�� 誘몃━ �뿰寃곗쓣 留븐뼱 �넃�� �젒�냽�쓣 �굹���궡�뒗 Connection媛앹껜 諛섑솚
+	}//getConnection硫붿냼�뱶 �걹
 	
-	public void 자원해제(){
+	public void ResourceFree(){
 		try{
 			if(pstmt != null){ pstmt.close();}
 			if(rs != null){rs.close();}
 			if(con != null){con.close();}
 		}catch(Exception e){
-			System.out.println("자원해제 실패 : " + e);	
+			System.out.println("ResourceFree �떎�뙣 : " + e);	
 		}
 	}
 	
 	
 	
-	/*joinPro.jsp에서 호출하는 메소드로   입력한 회원정보를 DB에 추가하는 메소드*/
+	/*joinPro.jsp�뿉�꽌 �샇異쒗븯�뒗 硫붿냼�뱶濡�   �엯�젰�븳 �쉶�썝�젙蹂대�� DB�뿉 異붽��븯�뒗 硫붿냼�뱶*/
 	public void insertMember(MemberBean memberBean){
 		
 		String sql = "";
 		
 		try {
-			//1.커넥션풀에서 커넥션얻기(DB연결)
+			//1.而ㅻ꽖�뀡���뿉�꽌 而ㅻ꽖�뀡�뼸湲�(DB�뿰寃�)
 			con = getConnection();
 			
-			//2.insert문장 만들기
+			//2.insert臾몄옣 留뚮뱾湲�
 			sql = "insert into member(id,passwd,name,reg_date,email,address,tel,mtel)"
 				+ "values(?,?,?,now(),?,?,?,?)";
 			
-			//3.PreparedStatement insert문 실행 객체 얻기
+			//3.PreparedStatement insert臾� �떎�뻾 媛앹껜 �뼸湲�
 			pstmt = con.prepareStatement(sql);
-			//3-1. ? 기호에 대응 되는 값을 우리가 입력한 가입할 내용으로 설정 
+			//3-1. ? 湲고샇�뿉 ���쓳 �릺�뒗 媛믪쓣 �슦由ш� �엯�젰�븳 媛��엯�븷 �궡�슜�쑝濡� �꽕�젙 
 			pstmt.setString(1, memberBean.getId());
 			pstmt.setString(2, memberBean.getPasswd());
 			pstmt.setString(3, memberBean.getName());
@@ -70,95 +70,95 @@ public class MemberDAO {
 			pstmt.setString(5, memberBean.getAddress());
 			pstmt.setString(6, memberBean.getTel());
 			pstmt.setString(7, memberBean.getMtel());
-			//4.insert문장을 DB에 전송 하여 실행
+			//4.insert臾몄옣�쓣 DB�뿉 �쟾�넚 �븯�뿬 �떎�뻾
 			pstmt.executeUpdate();
 		} catch (Exception e) {
-			System.out.println("insertMember메소드 내부 오류 : " + e);
+			System.out.println("insertMember硫붿냼�뱶 �궡遺� �삤瑜� : " + e);
 		} finally{
-			//5.자원해제
-			자원해제();	
+			//5.ResourceFree
+			ResourceFree();	
 		}
-	}//insertMember메소드 닫는 기호 
+	}//insertMember硫붿냼�뱶 �떕�뒗 湲고샇 
 	
 	
-	//회원가입을 위해 사용자가 입력한 id를 매개변수로 전달 받아..
-	//DB에 저장된 id와 비교 하여  중복, 중복이냐를 판단 해서 반환해주는 메소드
+	//�쉶�썝媛��엯�쓣 �쐞�빐 �궗�슜�옄媛� �엯�젰�븳 id瑜� 留ㅺ컻蹂��닔濡� �쟾�떖 諛쏆븘..
+	//DB�뿉 ���옣�맂 id�� 鍮꾧탳 �븯�뿬  以묐났, 以묐났�씠�깘瑜� �뙋�떒 �빐�꽌 諛섑솚�빐二쇰뒗 硫붿냼�뱶
 	public int idCheck(String id){		
 		String sql = "";		
-		//아이디 중복이냐, 중복이 아니냐 의 판단 데이터를 저장할 변수 선언
+		//�븘�씠�뵒 以묐났�씠�깘, 以묐났�씠 �븘�땲�깘 �쓽 �뙋�떒 �뜲�씠�꽣瑜� ���옣�븷 蹂��닔 �꽑�뼵
 		int check = 0;
 		
 		try {
-			//DataSource에서 Connection얻기 (DB연결)
+			//DataSource�뿉�꽌 Connection�뼸湲� (DB�뿰寃�)
 			con = getConnection();
-			//매개변수로 전달받은 입력한 아이디에 해당되는 회원 검색 SELECT문장 만들기 
+			//留ㅺ컻蹂��닔濡� �쟾�떖諛쏆� �엯�젰�븳 �븘�씠�뵒�뿉 �빐�떦�릺�뒗 �쉶�썝 寃��깋 SELECT臾몄옣 留뚮뱾湲� 
 			sql = "select * from member where id=?";
-			//SELECT문장을 실행할 PreparedStatement실행 객체 얻기
+			//SELECT臾몄옣�쓣 �떎�뻾�븷 PreparedStatement�떎�뻾 媛앹껜 �뼸湲�
 			pstmt = con.prepareStatement(sql);
-			//? 설정
+			//? �꽕�젙
 			pstmt.setString(1, id);
-			//DB에 SELECT전송하여 실행후 검색된 회원 한사람의 정보를 ResultSet객체에 담아 반환받습니다.
+			//DB�뿉 SELECT�쟾�넚�븯�뿬 �떎�뻾�썑 寃��깋�맂 �쉶�썝 �븳�궗�엺�쓽 �젙蹂대�� ResultSet媛앹껜�뿉 �떞�븘 諛섑솚諛쏆뒿�땲�떎.
 			rs = pstmt.executeQuery();
 			
-			if(rs.next()){//입력한 아이디에 해당되는 회원 한줄이 조회되면?
-						  //(입력한 아이디가 DB에 저장되어 있다면?)
-				check = 1; //아이디 중복
-			}else{//입력한 아이디가 DB에 존재 하지 않으면? 조회가 되지 않으면?
-				check = 0; //아이디 중복 아님 
+			if(rs.next()){//�엯�젰�븳 �븘�씠�뵒�뿉 �빐�떦�릺�뒗 �쉶�썝 �븳以꾩씠 議고쉶�릺硫�?
+						  //(�엯�젰�븳 �븘�씠�뵒媛� DB�뿉 ���옣�릺�뼱 �엳�떎硫�?)
+				check = 1; //�븘�씠�뵒 以묐났
+			}else{//�엯�젰�븳 �븘�씠�뵒媛� DB�뿉 議댁옱 �븯吏� �븡�쑝硫�? 議고쉶媛� �릺吏� �븡�쑝硫�?
+				check = 0; //�븘�씠�뵒 以묐났 �븘�떂 
 			}	
 		} catch (Exception e) {
-			System.out.println("idCheck메소드내부에서 오류 : " + e.toString());
+			System.out.println("idCheck硫붿냼�뱶�궡遺��뿉�꽌 �삤瑜� : " + e.toString());
 		} finally{
-			자원해제();
+			ResourceFree();
 		}
-		return check;//join_IDCheck.jsp로 리턴(반환) , check변수값 1또는 0을 반환 
-	}//idCheck메소드 닫는 기호 
+		return check;//join_IDCheck.jsp濡� 由ы꽩(諛섑솚) , check蹂��닔媛� 1�삉�뒗 0�쓣 諛섑솚 
+	}//idCheck硫붿냼�뱶 �떕�뒗 湲고샇 
 	
 	
-	//loginPro.jsp에서 호출하는 메소드로 
-	//사용자로 부터 입력받은 ID,PWD를 매개변수로 전달 받아..
-	//DB에 존재하는 ID,PWD가 같으면 로그인 처리 하는 메소드
+	//loginPro.jsp�뿉�꽌 �샇異쒗븯�뒗 硫붿냼�뱶濡� 
+	//�궗�슜�옄濡� 遺��꽣 �엯�젰諛쏆� ID,PWD瑜� 留ㅺ컻蹂��닔濡� �쟾�떖 諛쏆븘..
+	//DB�뿉 議댁옱�븯�뒗 ID,PWD媛� 媛숈쑝硫� 濡쒓렇�씤 泥섎━ �븯�뒗 硫붿냼�뱶
 	public int userCheck(String id, String passwd){
 		
-		int check = -1;  //  1 -> 아이디, 비밀번호 맞음 
-						 //  0 -> 아이디 맞음, 비밀번호 틀림
-						 //  -1 -> 아이디 틀림
+		int check = -1;  //  1 -> �븘�씠�뵒, 鍮꾨�踰덊샇 留욎쓬 
+						 //  0 -> �븘�씠�뵒 留욎쓬, 鍮꾨�踰덊샇 ��由�
+						 //  -1 -> �븘�씠�뵒 ��由�
 		try {
-			//위에 만들어 놓은 getConnection메소드를 호출해
-			//Connection객체 얻기 (DB접속)
+			//�쐞�뿉 留뚮뱾�뼱 �넃�� getConnection硫붿냼�뱶瑜� �샇異쒗빐
+			//Connection媛앹껜 �뼸湲� (DB�젒�냽)
 			con = getConnection();
-			//매개변수로 전달 받은 입력한 id에 해당되는 회원 검색 SQL문
+			//留ㅺ컻蹂��닔濡� �쟾�떖 諛쏆� �엯�젰�븳 id�뿉 �빐�떦�릺�뒗 �쉶�썝 寃��깋 SQL臾�
 			String sql = "select * from member where id=?";
-			//PreparedStatement실행객체 얻기 
+			//PreparedStatement�떎�뻾媛앹껜 �뼸湲� 
 			pstmt = con.prepareStatement(sql);
-			//?설정
+			//?�꽕�젙
 			pstmt.setString(1, id);
-			//입력한 id에 해당되는 회원 검색후 얻기 
+			//�엯�젰�븳 id�뿉 �빐�떦�릺�뒗 �쉶�썝 寃��깋�썑 �뼸湲� 
 			rs = pstmt.executeQuery();
 			
-			if(rs.next()){//입력한 id가 DB에 존재 하면(아이디 같으면)
+			if(rs.next()){//�엯�젰�븳 id媛� DB�뿉 議댁옱 �븯硫�(�븘�씠�뵒 媛숈쑝硫�)
 				
-				if(passwd.equals(rs.getString("passwd")) ){//비밀번호 같으면
+				if(passwd.equals(rs.getString("passwd")) ){//鍮꾨�踰덊샇 媛숈쑝硫�
 					
-					check = 1; //입력한 아이디 비밀번호가 DB에 저장된 값과 동일 하다는 뜻임
+					check = 1; //�엯�젰�븳 �븘�씠�뵒 鍮꾨�踰덊샇媛� DB�뿉 ���옣�맂 媛믨낵 �룞�씪 �븯�떎�뒗 �쑜�엫
 				
-				}else{//아이디는 같으나 비밀번호가 다르면
-					check = 0; //아이디 맞음 , 비밀번호 틀림 
+				}else{//�븘�씠�뵒�뒗 媛숈쑝�굹 鍮꾨�踰덊샇媛� �떎瑜대㈃
+					check = 0; //�븘�씠�뵒 留욎쓬 , 鍮꾨�踰덊샇 ��由� 
 				}			
-			}else{//입력한 id가 DB에 존재 하지 않으면
-				check = -1; //아이디 없음 
+			}else{//�엯�젰�븳 id媛� DB�뿉 議댁옱 �븯吏� �븡�쑝硫�
+				check = -1; //�븘�씠�뵒 �뾾�쓬 
 			}	
 		} catch (Exception e) {
-			System.out.println("userCheck메소드 내부에서 오류:"+ e);
+			System.out.println("userCheck硫붿냼�뱶 �궡遺��뿉�꽌 �삤瑜�:"+ e);
  		} finally {
-			자원해제();
+			ResourceFree();
 		}
-		return check;//loginPro.jsp페이지로 반환
+		return check;//loginPro.jsp�럹�씠吏�濡� 諛섑솚
 	}
 	
 	
 	
-}//MemberDAO클래스 끝
+}//MemberDAO�겢�옒�뒪 �걹
 
 
 
