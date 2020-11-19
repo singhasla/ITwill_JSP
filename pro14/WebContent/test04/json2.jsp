@@ -17,30 +17,34 @@
 			$("#checkJson").click(function() {
 			
 				//JSON객체 만들기
-				//	- JSON배열의 요소에 JSON객체를 저장한 후 다시 배열에 접근하여 JSON객체의 속성값을 얻어 출력
-				var jsonStr = '{	"members":[{"name":"박지성","age":30,"gender":"male"},'
-				                    	     +'{"name":"김연아","age":20,"gender":"female"},'
-				                    	     +'{"name":"손흥민","age":25,"gender":"male"}]	}';	//"name":"value", ...
+				//	- JSON객체는 중괄호{}로 둘러싸서 표현한다
+				//	- {}안에 실제 값은 name:value를 쌍으로 나열해서 저장한다.
+				//	- "age" -> 배열이름
+				//	- [22, 33, 44]	->	배열
+				var jsonStr = '{"age": [22, 33, 44]}';
 				
-				 
+				
 				//json.parse()메소드
 				//	- parse()메소드는 String객체를 JSON Object객체로 변환해서 반환해주는 역할을 함
 				var jsonInfo = JSON.parse(jsonStr);
+								// {"name" : ["홍길동", "이순신", "임꺽정"]}	<-- JSON Object객체(''작은따옴표 없음)
+				alert(jsonInfo);
+				console.log(jsonInfo);	//웹브라우저 F12 -> 웹브라우저의 console탭 확인
 				
-				var output = "회원정보<br>";
+				
+				var output = "회원나이<br>";
 				
 				output+="==========<br>";
 				
-				for(var i in jsonInfo.members){
-					output+="이름:"+ jsonInfo.members[i].name + "<br>";
-					output+="나이:"+ jsonInfo.members[i].age + "<br>";
-					output+="성별:"+ jsonInfo.members[i].gender + "<br>";
+					for(var i in jsonInfo.age){	/* 향상된 포문 for( 각 배열의 인덱스위치값을 저장할 변수 in 배열) */
+													/* jsonInfo.name = ["홍길동", "이순신", "임꺽정"] */
+						output += jsonInfo.age[i] + "<br>";
+													
+					}
 					
-					output+="==========<br>";	
-				}
-				
-				//아래의 <div>요소 영역에 출력json4.jsp
+				//아래의 <div>요소 영역에 출력json2.jsp
 				$("#output").html(output);
+				
 				
 				
 			});

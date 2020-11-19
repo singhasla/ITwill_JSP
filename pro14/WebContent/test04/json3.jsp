@@ -17,12 +17,11 @@
 			$("#checkJson").click(function() {
 			
 				//JSON객체 만들기
-				//	- JSON배열의 요소에 JSON객체를 저장한 후 다시 배열에 접근하여 JSON객체의 속성값을 얻어 출력
-				var jsonStr = '{	"members":[{"name":"박지성","age":30,"gender":"male"},'
-				                    	     +'{"name":"김연아","age":20,"gender":"female"},'
-				                    	     +'{"name":"손흥민","age":25,"gender":"male"}]	}';	//"name":"value", ...
+				//	- JSON객체 형태의 문자열을 변수에 저장
+				//	- 회원정보를 JSON객체 형태의 문자열로 만들어서 저장
+				var jsonStr = '{"name":"박지성", "age":25 , "gender":"male", "nickname":"날쌘돌이"}';	//"name":"value", ...
 				
-				 
+				
 				//json.parse()메소드
 				//	- parse()메소드는 String객체를 JSON Object객체로 변환해서 반환해주는 역할을 함
 				var jsonInfo = JSON.parse(jsonStr);
@@ -31,16 +30,14 @@
 				
 				output+="==========<br>";
 				
-				for(var i in jsonInfo.members){
-					output+="이름:"+ jsonInfo.members[i].name + "<br>";
-					output+="나이:"+ jsonInfo.members[i].age + "<br>";
-					output+="성별:"+ jsonInfo.members[i].gender + "<br>";
+				output+="이름:"+ jsonInfo.name + "<br>";
+				output+="나이:"+ jsonInfo.age + "<br>";
+				output+="성별:"+ jsonInfo.gender + "<br>";
+				output+="별명:"+ jsonInfo.nickname + "<br>";
 					
-					output+="==========<br>";	
-				}
-				
-				//아래의 <div>요소 영역에 출력json4.jsp
+				//아래의 <div>요소 영역에 출력json3.jsp
 				$("#output").html(output);
+				
 				
 				
 			});
