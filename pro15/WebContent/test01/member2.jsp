@@ -23,9 +23,6 @@
 			<td width="20%"><b>주소</b></td> 
 		</tr>
 		
-		<%-- EL표현언어 구문 영역 안에서 사용할 수 있는 param내장객체를 이용해 request내장객체 영역에 접근하여
-				getParameter()메소드를 이용하지 않고 
-				<input name="">속성값을 이용하여 입력한 회원정보를 바로 얻을 수 있다.						--%>
 		<tr align="center">
 			<td width="20%"><b>${param.id}</b></td>
 			<td width="20%"><b>${param.pwd}</b></td>
