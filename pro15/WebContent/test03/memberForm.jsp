@@ -7,9 +7,9 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<!-- 회원 가입창에서 회원정보를 입력한 후 member1.jsp로 전송하도록 작성합니다. -->
+	<!-- 회원 가입창에서 회원정보를 입력한 후 member8.jsp로 전송하도록 작성합니다. -->
 	
-	<form action="member1.jsp" method="post" >
+	<form action="member8.jsp" method="post" >
 	
 		<h1 style="text-align: center" >회원 가입창</h1>
 	
