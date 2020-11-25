@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+	<!--JQuery Setup-->
+	<script src="http://code.jquery.com/jquery-3.5.1.js"></script>
+	<script>
+		//아래의 <input>에서 입력한  ID를 얻어  DB에 존재하는 ID와 중복되는지 요청할수 있는 함수 
+		function fn_process() {
+			//사용자가 입력한 ID 얻어 변수에 저장
+			var _id	= $("#t_id").val(); //서블릿(서버페이지)으로 요청하는 파라미터 
+			
+			if(_id == ''){//아이디를 입력하지 않았다면
+				alert("ID를 입력하세요");
+				return;
+			}
+			//아이디를 입력 했다면  AJAX기술을 이용하여 서버페이로 아이디 중복확인을 요청함
+			$.ajax({
+					 type:"post",
+					 async:true,
+					 url:"http://localhost:8080/pro14/mem",
+					 dataType:"text",
+					 data:{id:_id}, //입력한 ID를 서블릿으로 요청시 요청할 데이터로 전송!
+					 success:function(data,textStatus){
+						  //서블릿(서버가실행하는페이지)에서 전송되어 오는 응답메세지를 
+						  //data매개변수로 전달 받아 ...아래의 div태그영역에 표시 
+						  if(data == "usable"){//아이디 중복이 아니면?
+							  //아래의 div요소를 선택해서 가져와서 
+							  //text로 메세지정보를 출력
+							  $("#message").text("사용할수 있는 ID입니다.");
+						  	  //사용할수 있는 ID이므로 ID중복체크버튼을 비활성화 시킴
+						  	  $("#btn_duplicate").prop("disabled",true);
+								  
+						  }else{//아이디 중복이면?
+							  //아래의 div요소를 선택해서 가져와서 
+							  //text로 메세지정보를 출력
+							  $("#message").text("사용할수 없는 ID입니다.");
+						  }			  
+					 },
+					 error:function(data, textStatus){
+						 alert(data);//에러메세지 얻어 출력 
+						 alert("에러가 발생했습니다.");
+					 }		
+			});		
+		}
+	</script>
+</head>
+<body>
+	<input type="text" id="t_id"/>
+	<input type="button" id="btn_duplicate" value="ID중복체크하기" onclick="fn_process()"/>
+	<br><br>
+	<!-- 아이디 중복인지 아닌지 메세지를 나타내는 div요소영역 -->
+	<div id="message"></div>
+
+
+</body>
+</html>
+
+
+
+
+

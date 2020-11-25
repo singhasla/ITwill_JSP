@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+	<!--JQuery Setup-->
+	<script src="http://code.jquery.com/jquery-3.5.1.js"></script>
+	
+</head>
+<body>
+	<!-- 조회한 모든 회원정보를 나타낼 영역 -->
+	<div id="memberInfo"></div>
+
+	<!-- 조회요청 버튼 -->
+	<input type="button" value="회원정보조회요청"  onclick="fn_process()">
+	
+	<script>
+			function fn_process() {
+				//AJAX통신기술을 이용하여 서버페이지로 회원정보 조회 요청함
+				$.ajax({
+					type : "post",
+					async : true,
+					url : "http://localhost:8080/pro14/mem2",
+					dataType : "xml",
+					success : function(info,textStatus){
+						//MemberServlet서블릿으로부터 XML데이터<main>태그영역 전체를 응답 받은후
+						//find()메소드를 이용하여 <member>태그들을 배열에 담아 모두 선택해 온후
+						//each()메소드를 이용하여 각각의 <member>태그를 반복해서 선택해옵니다
+						//<member>태그영역 내부의 <id> <name> <email> <date> <pwd>태그영역의 
+						//텍스트값을 얻어 저장한다.
+						$(info).find("member").each(function(){
+							
+							var id = $(this).find("id").text();
+							var name = $(this).find("name").text();
+							var email = $(this).find("email").text();
+							var date = $(this).find("date").text();
+							var pwd = $(this).find("pwd").text();
+							
+							//id속성값이 memberInfo인  <div>태그영역을 선택해서 가져와서
+							//그영역에  조회한 정보 표시
+							$("#memberInfo").append(
+													"<h1>검색한 회원 정보 출력</h1>" + 
+													"<p> id="+ id +", name="+ name +",email="+email+", Date="+ date +",pwd="+pwd+" </p>"
+											        );
+							
+							
+						});
+						
+						
+					},
+					error : function(data, textStatus){
+						alert("에러가 발생했습니다.");
+					} 
+				});	
+			}//fn_process()함수 끝
+	</script>
+
+</body>
+</html>
+
+
+
+
