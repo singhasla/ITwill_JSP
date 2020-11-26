@@ -38,7 +38,7 @@
 	fn:substringing("Hello World!")를 호출한 결과 = ${fn:substring(title1, 0, 1)}<br>	<%-- H --%>
 	
 	<%-- fn:trim(string)함수는 string변수에 저장된 문자열의 앞뒤 공백을 제거해서 반환 --%>
-	fn:trim("abcd ")를 호출한 결과 = ${fn:trim(t1)}<br>	<%--  --%>
+	fn:trim(" abcd ")를 호출한 결과 = ${fn:trim(t1)}<br>	<%--  --%>
 	
 	<%-- fn:replace(string, 바꾸려는 문자, 바꿀 문자를 대체할 문자)함수 --%>
 	fn:replace("Hello World!")를 호출한 결과 = ${fn:replace(title1, " ", "/")}<br>	<%-- Hello/World! --%>
