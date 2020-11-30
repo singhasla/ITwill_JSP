@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<!-- 파일업로드 요청시..form태그에    enctype="multipart/form-data" 반드시 지정 해야 함.   -->
+	<h1>간단한 파일 업로드 예제</h1>
+	<form action="basic.jsp" method="post" enctype="multipart/form-data">
+		업로드하는 사람 : <input type="text" name="user"/> <br>
+		제목 : <input type="text" name="title"/> <br>
+		업로드할 파일 선택 : <input type="file" name="upFile" /> <br>
+		<input type="submit" value="파일업로드요청" />
+	</form>
+
+
+
+</body>
+</html>
