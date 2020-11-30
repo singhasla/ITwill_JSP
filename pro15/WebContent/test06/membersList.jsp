@@ -20,10 +20,29 @@
 	</tr>
 	
 	<c:choose>
-		<c:when test="${membersList == null}">	<!-- requestScope.membersList에서 requestScope 생략가능 -->
+	<%-- member_action.jsp페이지에서 재요청시 유지되고 있는 request내장객체 메모리영역에 
+		저장된 ArrayList에서 꺼내어서 사용! --%>
+		
+		<%-- 등록된 회원정보가 없다면? --%>
+		<c:when test="${mList == null}">	<!-- requestScope.membersList에서 requestScope 생략가능 -->
 			<tr>
 				<td colspan="5">등록된 회원이 없습니다.</td> 
 			</tr>
+		</c:when>
+
+		<%-- 등록된 회원정보가 있다면? --%>
+		<%-- ArrayList배열에 저장된 MemberBean객체의 갯수만큼 반복 --%>
+		<c:when test="${mList != null}">
+			<%-- ArrayList배열에 저장된 MemberBean객체의 갯수만큼 반복 --%>
+			<c:forEach var="mem" items="${requestScope.mList}">
+				<tr align="center">
+					<td>${mem.id}</td>
+					<td>${mem.pwd}</td>
+					<td>${mem.name}</td>
+					<td>${mem.email}</td>
+					<td>${mem.joinDate}</td>
+				</tr>
+			</c:forEach>
 		</c:when>	
 	</c:choose>
 	
