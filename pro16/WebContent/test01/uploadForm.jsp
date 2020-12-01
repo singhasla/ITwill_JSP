@@ -27,7 +27,7 @@
 			서블릿(FileUpload.java)에게 요청해 파일을 업로드하기 위해  가상경로 주소 action속성에 작성
 			파일 업로드할때 반드시 encType속성의 값을 multipart/form-data로 설정해야 한다.	
 	--%>
-	<form action="${contetPath}/upload.do" method="post" enctype="multipart/form-data">
+	<form action="${contextPath}/upload.do" method="post" enctype="multipart/form-data">
 		파일1 : <input type="file" name="file1"> <br>
 		파일2 : <input type="file" name="file2"> <br>
 		

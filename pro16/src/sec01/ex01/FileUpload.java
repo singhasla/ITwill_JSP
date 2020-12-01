@@ -45,7 +45,7 @@ public class FileUpload extends HttpServlet{
 		request.setCharacterEncoding("UTF-8");
 		
 		//업로드할 파일 경로와 연결된 File객체 생성
-		File currentDirPath = new File("C:/Temp/file_repo");
+		File currentDirPath = new File("C:\\Temp\\file_repo");
 		
 		//업로드할 파일 데이터를 임시로 저장해 놓을 객체 메모리 생성
 		DiskFileItemFactory factory = new DiskFileItemFactory();
@@ -86,17 +86,40 @@ public class FileUpload extends HttpServlet{
 				} else {	//DiskFileItem객체의 정보가 업로드할 파일 하나의 정보일 경우
 					System.out.println("파라미터 :" + fileItem.getFieldName());
 					System.out.println("파일이름 :" + fileItem.getName());
-					System.out.println("파일크기 :" + fileItem.getSize());
+					System.out.println("파일크기 :" + fileItem.getSize() + "byte");
 					
 					//파일크기가 0보다 크다면(업로드할 파일이 존재한다면)
 					if(fileItem.getSize() > 0){
 						
-					}
-				}
-			}
+						//업로드할 파일명을 얻어 파일명 뒤에서부터 \\문자열을 포함하고 있는지
+						//인덱스 위치값을 알려주는데.. 없으면.. -1을 반환함.
+						int idx = fileItem.getName().lastIndexOf("\\");
+						System.out.println(idx);
+						
+						if(idx == -1){
+							idx = fileItem.getName().lastIndexOf("/");	// -1 얻기
+							System.out.println("안녕: " + idx);
+						}
+						
+						//업로드할 파일명 얻기
+						String fileName = fileItem.getName().substring(idx + 1);
+						
+						//업로드할 파일경로 + 업로드할 파일명을 이용해 File객체 생성
+						File uploadFile = new File(currentDirPath+"\\"+fileName);
+						
+						//실제 파일 업로드
+						fileItem.write(uploadFile);
+						
+					}// end if
+					
+				}// end else
+				
+			}// end for
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-}
+		
+	}//doHandle() 끝
+	
+}//FileUpload 끝
