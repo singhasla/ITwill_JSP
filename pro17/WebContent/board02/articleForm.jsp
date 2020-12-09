@@ -51,7 +51,7 @@
 				var reader = new FileReader();
 				
 				//지정한 <img>태그에 첫번째 파일 input에 첨부한 파일에 대한 정보를 가지고 있는
-				//File객체의 정보를 읽어들입니다.
+				//File객체의 정보를 읽어 드립니다.
 				reader.readAsDataURL(input.files[0]);
 				
 				//파일내용을 모두 읽어 들였다면
@@ -95,7 +95,7 @@
 		<h1 style="text-align: center;" >새글 쓰기</h1>
 
 		<%--action속성의 값을  /addArticle.do로 작성해서  새글등록 요청을 BoardController서블릿으로 할것이다. --%>
-		<form action="${conextPath}/board/addArticle.do" 
+		<form action="${contextPath}/board/addArticle.do" 
 		      method="post"
 		      enctype="multipart/form-data">
 		
@@ -115,7 +115,7 @@
 					
 					<%--첨부할 다른 이미지파일을 선택해서 변화가 일어나면?  
 					    readURL()함수 호출시 변화가 일어난 <input>태그 자체를 매개변수로 전달 --%>
-					<td><input type="file" name="imageFileName" onchange="readURL(this);" ></td>
+					<td><input type="file" name="imageFileName" onchange="readURL(this);" >        </td>
 					
 					<%--첨부할 이미지 선택시 나타날 미리보기 화면 영역 --%>
 					<td id="tdImg">   </td>
@@ -129,6 +129,10 @@
 				</tr>						
 			</table>
 		</form>
+	 
+
+
+
 </body>
 </html>
 
