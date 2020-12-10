@@ -48,7 +48,7 @@ import org.apache.commons.io.FileUtils;
  */
 
 
-@WebServlet("/board/*")                        //request    /board/articleForm.do
+//@WebServlet("/board/*")                        //request    /board/articleForm.do
 public class BoardController extends HttpServlet {
 
 	//새글 추가시 첨부할 이미지 저장위치의 경로를 상수로 선언합니다.
@@ -109,6 +109,7 @@ public class BoardController extends HttpServlet {
 			
 			nextPage = "/board02/listArticles.jsp";
 			
+			
 		} else if(action.equals("/listArticles.do")){ 
 			//모든 글정보 조회를 위한 호출
 		    //리턴 받는 값은 조회된 ArticleVO객체들이 저장되어 있는 ArrayList배열
@@ -118,6 +119,7 @@ public class BoardController extends HttpServlet {
 			
 			nextPage = "/board02/listArticles.jsp";
 		
+			
 		//조회된 글목록창에서 글쓰기 <a>태그를 클릭해 요청 받은  주소가 /articleForm.do 이면
 		//(글쓰기 디자인 화면으로 이동 하라는 요청주소를 받았을떄)
 		} else if(action.equals("/articleForm.do")){
@@ -152,9 +154,13 @@ public class BoardController extends HttpServlet {
 			int articleNO = boardService.addArticle(articleVO);	//->테이블에 새 글을 INSERT한 후, 추가시킨 새 글의 글번호를 조회해서 반환받는다.
 			
 			
-//			
+//글번호별 업로드폴더 생성하기	
 			//파일을 첨부한 경우에만 일을 수행하게끔 하기위해 조건주기
 			if(imageFileName != null && imageFileName.length() != 0){
+				//1.먼저 temp폴더에 업로드 파일 생성 후, 
+				//2.글번호 폴더를 생성한 후, 
+				//3.생성한 글번호 폴더로 업로드 파일을 이동시킴
+				
 				//temp폴더에 임시로 업로드된 파일에 접근하기 위해 File객체를 생성한다
 				File srcFile = new File(ARTICLE_IMAGE_REPO +"\\"+"temp"+"\\"+imageFileName);
 				
@@ -183,9 +189,9 @@ public class BoardController extends HttpServlet {
 		dispatch.forward(request, response);
 		
 		
-		
-		
 	}//doHandle메소드 끝
+	
+	
 	
 	//파일 업로드 처리를 위한 메소드
 	private Map<String, String> upload(HttpServletRequest request, 
@@ -272,6 +278,7 @@ public class BoardController extends HttpServlet {
 		}
 		return articleMap;//해쉬맵을 리턴
 	}//upload메소드 끝
+	
 	
 }//BoardController클래스 끝
 
