@@ -288,7 +288,28 @@ public class BoardController extends HttpServlet {
 			//DB에 존재하는 글을 삭제한 후  삭제된 부모글과 자식글의 articleNO(글번호)글을 조회하여  ArrayList배열에 담아 리턴 받기
 			List<Integer> articleNOList = boardService.removeArticle(articleNO);
 			
-		}
+			//삭제된 글들의 이미지 저장 폴더들을 삭제한다.
+			for(int _articleNO : articleNOList){
+				
+				//DB에는 모든 글들이 삭제되었으므로
+				//삭제된 글번호 폴더까지 모두 삭제하기 위해 경로 지정
+				File imgDir = new File(ARTICLE_IMAGE_REPO+"\\"+_articleNO);
+				
+				if(imgDir.exists()){
+					//DB에 삭제된 글에 대한 글번호 폴더 삭제
+					FileUtils.deleteDirectory(imgDir);
+				}
+			}//for
+			
+			PrintWriter pw = response.getWriter();
+			pw.print("<script>"
+						+" alert('글을 삭제했습니다.');"
+						+" location.href='" + request.getContextPath() + "/board/listArticles.do';"
+					+"</script>");
+			
+			return;
+			
+		}//else if 끝
 			
 		
 		//뷰페이지로 포워딩시 request전달 

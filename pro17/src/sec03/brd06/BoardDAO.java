@@ -32,7 +32,7 @@ public class BoardDAO {
 		}
 	}//생성자 끝
 	
-	
+	/* 삭제할 글에 대한 글 번호를 검색해서 가져오는 메소드 */
 	//BoardService클래스로 부터 삭제할 글번호를 매개변수로 전달 받아 
 	//삭제할 글들의 articleNO(글번호)를 조회한후 ArrayList배열에 담아 반환 하는 메소드 
 	public List<Integer> selectRemoveArticles(int articleNO){
@@ -51,21 +51,66 @@ public class BoardDAO {
 			pstmt = conn.prepareStatement(query);
 			pstmt.setInt(1, articleNO);
 			
-						   
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				articleNO = rs.getInt("articleNO");
+				articleNOList.add(articleNO);
+			}
+			pstmt.close();
+			conn.close();
 			
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 		
-		return articleNOList;
+		return articleNOList; //조회된 모든 글번호들이 저장된 ArrayList배열을 BoardService로 반환
 		
-	}
+	}//selectRemoveArticles메소드 끝
 	
+	
+	//매개변수로 전달받은 삭제할 부모 글번호에 해당하는 자식글까지 모두 삭제시키는 메소드
+	public void deleteArticle(int articleNO){
+		
+		/*
+		 	참고 : 오라클의 계층형 SQL문을 이용해 부모글에 대한 자식글을 모두 삭제하는 SQL문입니다.
+		 
+		 	DELETE FROM t_board WHERE articleNO in(  
+					SELECT articleNO FROM  t_board
+					START WITH articleNO = 2  <--- 글번호가 2인 글과 연결된 자식 글을 삭제 합니다.
+					CONNECT BY PRIOR articleNO = parentNO
+				  );
+				  
+			다시 말해, delete문에서는 start with 다음에 articleNO의 값이 2이므로
+			글번호가 2인 글과 그 자식(답변글)글 들을 모두 삭제하라는 의미입니다.
+		 */
+		try{
+			//커넥션풀로부터 커넥션 얻기(DB연결)
+			conn = dataFactory.getConnection();
+			
+			//매개변수로 전달받는 부모글번호에 해당하는 글과 그에 연결된 모든 답변글까지 삭제시키는 SQL문 만들기
+			String query = "DELETE FROM t_board";
+					query += " WHERE articleNO in ( ";
+					query += " SELECT articleNO FROM t_board";
+					query += " START WITH articleNO = ?";
+					query += " CONNECT BY PRIOR articleNO = parentNO )";
+					
+			pstmt = conn.prepareStatement(query);
+			pstmt.setInt(1, articleNO);
+			pstmt.executeUpdate();
+			
+			pstmt.close();
+			conn.close();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}//deleteArticle메소드 끝
 	
 	
 	//BoardService클래스로 부터 전달된 수정할 데이터(ArticleVO객체에 저장된 데이터)를  매개변수로 전달 받아
 	//수정할 이미지파일을 수정하는 경우와 이미지 파일을 수정하지 않는 경우를 구분해  동적으로 SQL문을 생성하여  DB에 UPDATE 시키는 메소드 
-	public void updateArticle(ArticleVO   article){
+	public void updateArticle(ArticleVO article){
 		
 		//DB에 UPDATE할 정보들!!! ArticleVO객체의 각 변수에 저장된 값들을 얻자
 		int articleNO = article.getArticleNO();//getter메소드 호출
@@ -78,7 +123,7 @@ public class BoardDAO {
 			conn = dataFactory.getConnection();
 			
 			//UPDATE구문 만들기 
-			String query = "update t_board set title=?, content=?";	
+			String query = "UPDATE t_board SET title=?, content=?";	
 			
 			/*수정된 이미지 파일이 있을때만 imageFileName을 SQL문에 추가 합니다.*/
 			//글수정시 이미지를 수정하지 위해 선택한 이미지 파일명이 존재하면?
@@ -87,7 +132,7 @@ public class BoardDAO {
 				query += ",imageFileName=?";
 			}
 			//이미지 파일을 수정하지 않을 경우?
-			query += " where articleNO=?";			
+			query += " WHERE articleNO=?";			
 			
 			pstmt = conn.prepareStatement(query);
 			pstmt.setString(1, title);
@@ -119,7 +164,7 @@ public class BoardDAO {
 			//커넥션풀로부터 커넥션 얻기 (DB연결)
 			conn = dataFactory.getConnection();
 			//기본들 번호 중에서 가장 큰 글번호를 조회하는 SQL문
-			String query = "SELECT max(articleNO) from t_board";
+			String query = "SELECT MAX(articleNO) FROM t_board";
 			pstmt = conn.prepareStatement(query);		
 			rs = pstmt.executeQuery();
 			if(rs.next()){//최신 글번호(가장 큰 글번호)가 검색되었다면
@@ -184,7 +229,6 @@ public class BoardDAO {
 		return articleNO;//DB에 INSERT 시킬 새글의 글번호를 리턴 (반환)
 		
 	}//insertNewArticle메소드 끝
-	
 
 	
 	//BoardService클래스에서 BoardDAO의  selectAllArticles()메소드를 호출하면
@@ -197,8 +241,8 @@ public class BoardDAO {
 			//커넥션풀로 부터 커넥션 얻기(DB접속)
 			conn = dataFactory.getConnection();
 			//계층형 구조로 전체 글을 조회하는 오라클의 SQL문 만들기
-			String query = "SELECT LEVEL,articleNO,parentNO,title,content,id,writeDate"
-					     + " from t_board"
+			String query = "SELECT level,articleNO,parentNO,title,content,id,writeDate"
+					     + " FROM t_board"
 					     + " START WITH parentNO=0"
 					     + " CONNECT BY PRIOR articleNO=parentNO"
 					     + " ORDER SIBLINGS BY articleNO DESC";
@@ -282,8 +326,8 @@ public class BoardDAO {
 			//커넥션풀로 부터 커넥션 얻기 (DB연결)
 			conn = dataFactory.getConnection();
 			//매개변수로 전달 받은 글번호에 해당되는 글의 정보를 검색 하는 SQL문 만들기
-			String query = "select articleNO, parentNO, title, content, imageFileName, id, writeDate"
-					     + " from t_board where articleNO=?";
+			String query = "SELECT articleNO, parentNO, title, content, imageFileName, id, writeDate"
+					     + " FROM t_board WHERE articleNO=?";
 			System.out.println(query);
 			//?를 제외한 SQL문을 로딩한 PreparedStatement객체 얻기
 			pstmt = conn.prepareStatement(query);
