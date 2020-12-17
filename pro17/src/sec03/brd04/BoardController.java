@@ -54,7 +54,7 @@ import org.apache.commons.io.FileUtils;
  */
 
 //글 제목을 클릭했을때 ==> /board/viewArticle.do?articleNo=${article.articleNO}
-@WebServlet("/board/*")                        //request    /board/articleForm.do
+//@WebServlet("/board/*")                        //request    /board/articleForm.do
 public class BoardController extends HttpServlet {
 
 	//새글 추가시 첨부할 이미지 저장위치의 경로를 상수로 선언합니다.
