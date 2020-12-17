@@ -1,0 +1,12 @@
+
+
+답글 쓰기 구현 과정
+
+1. 글 상세창(viewArticle.jsp)에서 답글쓰기 버튼을 클릭하면 /board/replyForm.do로 
+	부모 글번호(parentNO)를  BoardController서블릿으로 전송 합니다. (답글을 작성할 수 있는 화면으로 이동해달라고 요청)
+
+2. 답글쓰기창(replyForm.jsp)에서 답변 글을 작성한 후 요청을 /board/addReply.do로 하여
+	BoardController서블릿으로 답글 쓰기 요청을 합니다.
+
+3. BoardController서블릿에서는 전송된 답글 정보를 t_board테이블(게시판테이블)에 부모글번호와 함께 답변글을 추가합니다.
+
