@@ -1,0 +1,31 @@
+
+
+글 삭제 기능 구현 과정
+
+- 글을 삭제 할때는 테이블에 저장된 글 정보 뿐만 아니라 그 글의 자식글과 이미지 파일도 함께 삭제 해야 합니다.
+
+1. 글 상세창(viewArticle.jsp)에서 삭제하기를 클릭하면 /board/removeArticle.do로 BoardController서블릿을 요청 합니다.
+
+2. BoardController서블릿에서는 글 상세창에서 전달 받은 글 번호에  대한 글과  이에 관련된 자식글들을 삭제 합니다.
+
+3. 삭제된 글에 대한 업로드된 이미지파일 저장 폴더도 함께 삭제 합니다.
+
+
+- 참고 : 오라클의 계층형 SQL문을 이용해 부모 글에 대한 자식 글을 삭제하는 SQL문이다.
+
+DELETE FROM t_board
+WHERE articleNO in(  
+					SELECT articleNO FROM  t_board
+					START WITH articleNO = 2  <--- 글번호가 2인 글과 연결된 자식 글을 삭제 합니다.
+					CONNECT BY PRIOR articleNO = parentNO
+				  );
+
+설명 : DELETE문에서  START WITH절 다음에 articleNO의 값이 2이므로  글 번호가 2인 글과 그자식 글들을 모두 삭제하라는 의미 입니다.
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
