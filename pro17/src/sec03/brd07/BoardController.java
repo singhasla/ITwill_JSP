@@ -78,7 +78,7 @@ viewArticle.jsp페이지에서 삭제하기 버튼을 눌러
 	답글을 작성한후 답글등록 요청(/board/addReply.do)시  세션영역에서  parentNO을 가져와 
 	t_board테이블에 추가한다는 점입니다.
 */
-@WebServlet("/board/*")                        
+//@WebServlet("/board/*")                        
 public class BoardController extends HttpServlet {
 
 	//새글 추가시 첨부할 이미지 저장위치의 경로를 상수로 선언합니다.
