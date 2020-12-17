@@ -70,7 +70,7 @@ viewArticle.jsp페이지에서 삭제하기 버튼을 눌러
 삭제할 글번호에 대한 글과 그 자식글을 삭제하기 전에  먼저 삭제할 글번호와 자식 글번호를 조회해서 가져옵니다.
 그리고  글을 삭제한 후 글번호로 이루어진 이미지 저장 폴더 까지 모두 삭제 합니다.
 */
-@WebServlet("/board/*")                        
+//@WebServlet("/board/*")                        
 public class BoardController extends HttpServlet {
 
 	//새글 추가시 첨부할 이미지 저장위치의 경로를 상수로 선언합니다.
