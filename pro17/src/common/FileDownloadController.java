@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 //viewArticle.jsp에서 전송한 글번호와 이미지파일이름으로 파일 경로를 만든후  해당 파일을 내려 받습니다.
 
-@WebServlet("/download.do")
+//@WebServlet("/download.do")
 public class FileDownloadController extends HttpServlet{ //이미지를 다운받아 <img>태그에 제공 해주는 클래스 
 
 	private static String ARTICLE_IMAGE_REPO = "C:\\board\\article_image";
