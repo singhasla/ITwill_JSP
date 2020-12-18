@@ -1,0 +1,96 @@
+
+
+
+
+게신판 페이징 기능 구현 과정
+
+설명 : 어떤 게시판이든  목록의 글이 많아지면 한페이지에 모든 글이 표시되는 것이 아니라
+          다음과 같이  1     2    3    4   5   6   ...... 10 이렇게 페이지별로  표시됩니다.
+	  
+	  여기서 하단에 보이는 숫자는 페이지 번호 입니다.
+	  한 페이지 마다 10개의 글이 표시되고, 이페이지 10개가 모여 한개의 섹션(section)이 됩니다. 
+	  
+	  섹션 하나는 첫 번째 페이지부터 열번째 페이지 까지 입니다. 
+	  두번째 섹션은 열한 번째 페이지부터 스무 번째 까지 입니다. 따라서 사용자가 글 목록 페이지에 2페이지번호를 클릭하면
+	 브라우저는 서버에  setction값으로 1을 , pageNum값으로는 2를 전송하는 것이죠~
+	 그리고 글목록에는 두번째 페이지에 해당하는 글인  11에서 20번째 글을 테이블에서 조회한후  화면에 표시 합니다.  
+	  
+그림
+
+   1. 글내용
+   2. 글내용
+   3. 글내용
+   4. 글내용
+   .......
+   10.글내용
+   
+   1     2     3     4     5    6  ..... 10   <----- 한 섹션은 페이지  번호 열개로 이루어집니다.
+   
+
+
+
+ [ section과 pageNum으로 글 목록 조회하는 SQL문 ] 
+ 
+  ROWNUM <--- 계층형으로 조회된 레코드의 ROWUM(recNum)이 표시되도록 조회합니다.
+  		 <--- 추가 설명 : ROWNUM은 select문으로 조회된 레코드 목록에 대해 오라클 자체에서 순서를 부여하여 레코드 번호를 순서대로 할당 해줍니다.
+ 
+  SELECT * FROM (
+               SELECT ROWNUM as recNUM,
+                         LVL,
+                         articleNO,
+                         parentNO,
+                         title,
+                         content,
+                         id,
+                         writedate
+                       FROM (
+                              SELECT LEVEL as LVL,
+                                     articleNO,
+                                     parentNO,
+                                     title,
+                                     content,
+                                     id,
+                                     writedate
+                                FROM t_board
+	                            START WITH parentNO=0
+	                            CONNECT BY PRIOR articleNO=parentNO
+	                            ORDER SIBLINGS BY articleNO DESC
+                			)
+                )where recNum between(section-1)*100+(pageNum-1)*10+1  and (section-1) *100 + pageNum*10;
+				   	//section과 pageNum값으로 조건식의 recNum범위를 정한후 조회된 글 중 해당하는 값이 있는 경우 최종적으로 조회합니다.
+				   //recNum between   1                              and             1;		
+  				   //               section값이 1이고                                                        pageNum값이  1인 경우(첫번째 페이지에 표시되는 글 조회) 	
+  				   
+				   		   
+ 페이징 기능을 구현하기 위해  서브 쿼리문과  오라클에서 제공하는  가상 컬럼인 ROWNUM을 이용합니다
+ ROWNUM은 select문으로 조회된 레코드 목록에 대해 오라클 자체에서 순서를 부여하여 레코드 번호를 순서대로 할당 해줍니다.
+ 
+ 이 서브 쿼리문의 실행 순서는 다음과 같습니다.
+ 
+ 1. 기존 계층형 구조로 글목록을 일단 조회합니다.
+ 
+ 2. 조회된 결과에 대해서 다시~~ ROWNUM(recNum)이 표시되도록  서브 쿼리문을 이용해 다시 한번더 조회합니다.
+ 
+ 3. ROWNUM이 표시된 두번째 결과에서  
+    section과  pageNum으로 계산된 where절의 between연산자 사이의 값에 해당하는  ROWNUM이 있는 레코드들만 최종적으로 조회합니다.
+  						   
+  						   
+  	
+  	
+순서 1. http://localhost:8080/board/listArticles.do로 모든 글 조회 요청을 BoardController서블릿으로 하게 된다
+
+순서2. 서블릿은 그요청을 받아 모든글을 조회한후 웹브라우저 화면에 표시한다.					   
+  						     
+ 
+
+
+
+
+
+
+
+
+
+
+
+
