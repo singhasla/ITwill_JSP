@@ -86,7 +86,7 @@ viewArticle.jsp페이지에서 삭제하기 버튼을 눌러
      
     
  */
-@WebServlet("/board/*")                        
+//@WebServlet("/board/*")                        
 public class BoardController extends HttpServlet {
 
 	//새글 추가시 첨부할 이미지 저장위치의 경로를 상수로 선언합니다.
