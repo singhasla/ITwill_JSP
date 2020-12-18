@@ -77,7 +77,7 @@ public class BoardController extends HttpServlet {
 				articlesMap.put("section", section);
 				articlesMap.put("pageNum", pageNum);
 				request.setAttribute("articlesMap", articlesMap);
-				nextPage = "/board07/ listArticles.jsp";
+				nextPage = "/board07/listArticles.jsp";
 				}else if(action.equals("/listArticles.do")){  			
 				String _section=request.getParameter("section");
 				String _pageNum=request.getParameter("pageNum");
@@ -168,7 +168,7 @@ public class BoardController extends HttpServlet {
 				int parentNO = Integer.parseInt(request.getParameter("parentNO"));
 				session = request.getSession();
 				session.setAttribute("parentNO", parentNO);
-				nextPage = "/board06/replyForm.jsp";
+				nextPage = "/board07/replyForm.jsp";
 			} else if (action.equals("/addReply.do")) {
 				session = request.getSession();
 				int parentNO = (Integer) session.getAttribute("parentNO");
@@ -195,7 +195,7 @@ public class BoardController extends HttpServlet {
 				return;
 			
 			}else {
-				nextPage = "/board06/listArticles.jsp";
+				nextPage = "/board07/listArticles.jsp";
 			}
 
 			RequestDispatcher dispatch = request.getRequestDispatcher(nextPage);
